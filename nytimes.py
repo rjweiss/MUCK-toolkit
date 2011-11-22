@@ -1,7 +1,5 @@
-from lxml import etree
-import sys
+from lxml import: etree
 import os
-#import yaml 
 import cPickle as pickle
 
 main_path = "/home/rebecca/Desktop/final project/"
@@ -41,25 +39,30 @@ def parseXML(file):
 	return article
 
 
-articles = []
-year_path = main_path + "2000/"
-year_listing = os.listdir(year_path)
-for month_dir in year_listing:
-	month_path = year_path + "/%s" % month_dir
-	os.chdir(month_path)
-	month_listing = os.listdir(month_path)
-	for day_dir in month_listing:
-		day_path = month_path + "/%s" % day_dir
-		os.chdir(day_path)
-		day_listing = os.listdir(day_path)
-		for file in day_listing:
-			try:
-				articles.append(parseXML(file))
-			except:
-				print "There is a problem with %s" %file
+#parsing NYTimes articles from 2000
+def main():	
+	articles = []
+	year_path = main_path + "2000/"
+	year_listing = os.listdir(year_path)
+	for month_dir in year_listing:
+		month_path = year_path + "/%s" % month_dir
+		os.chdir(month_path)
+		month_listing = os.listdir(month_path)
+		for day_dir in month_listing:
+			day_path = month_path + "/%s" % day_dir
+			os.chdir(day_path)
+			day_listing = os.listdir(day_path)
+			for file in day_listing:
+				try:
+					articles.append(parseXML(file))
+				except:
+					print "There is a problem with %s" %file
 
-os.chdir(main_path)
-f = open('nytimes2000.pkl', "w")
-#yaml.dump(articles[0], f)
-pickle.dump(articles, f)
-f.close()
+	os.chdir(main_path)
+	f = open('nytimes2000.pkl', "w")
+	#yaml.dump(articles[0], f)
+	pickle.dump(articles, f)
+	f.close()
+
+if __name__ == '__main__':
+	main()
