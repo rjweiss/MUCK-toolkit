@@ -3,7 +3,6 @@ import os
 import cPickle as pickle
 #import glob
 
-
 def parseXML(file):
 	doc = etree.parse(file)
 	root = doc.getroot()
@@ -62,15 +61,16 @@ def main():
 			for file in day_listing:
 				try:
 					articles.append(parseXML(file))
+					break #for now, work with just one article
 				except:
 					print "There is a problem with %s" %file
 
 	os.chdir(main_path)
 	f = open('nytimes2000.pkl', "w")
-	#yaml.dump(articles[0], f)
 	pickle.dump(articles, f)
 	f.close()
 
 if __name__ == '__main__':
 	main()
-	print "Done"
+	print os.getcwd()
+	print "Done."
