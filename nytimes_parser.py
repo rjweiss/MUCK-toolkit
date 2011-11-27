@@ -35,10 +35,7 @@ def parse_xml(file):
 	body = [str(element) for element in body]
 	body = ' '.join(body)
 
-	#this is pretty hacky...only works if IDs are 7 digits or less
-	id = str(doc.docinfo.URL)[0:7]
-
-	article = {"id":id, "year":year, "month":month, "date":date, "day":day, "pagenum": pagenum, "pagesect":pagesect, "pagecol": pagecol, "descriptors": descriptors, "taxclass": taxclass, "general_desc": general_desc, "headline": headline, "lead": lead, "body":body}
+	article = {"year":year, "month":month, "date":date, "day":day, "pagenum": pagenum, "pagesect":pagesect, "pagecol": pagecol, "descriptors": descriptors, "taxclass": taxclass, "general_desc": general_desc, "headline": headline, "lead": lead, "body":body, 'file': file}
 
 	return article
 
@@ -48,23 +45,19 @@ def parse_dir(root_dir):
 		for file in files:
 			f = os.path.join(root, file)
 			try:
-				articles.append(parse_xml(f))
+				article = parse_xml(f)
+				p = open(f + '.pkl', 'wb')
+				pickle.dump(article, p)
+				p.close()
 			except:
 				print "There is something wrong with %s" % file
 
-	#do pickle dump outside of main method
-	os.chdir(root_dir + 'pickle/')
-	p = open('nytimes2000.pkl', 'wb')
-	pickle.dump(articles, p)
-	p.close()
-
 #parsing NYTimes articles from 2000
 def main():	
-	main_path = "/home/rebecca/Desktop/final project/"
+	main_path = "/home/rebecca/Desktop/fp/"
 	parse_dir(main_path + '2000/')
 	os.chdir(main_path)
 
 if __name__ == '__main__':
 	main()
-	print os.getcwd()
 	print "Done."
