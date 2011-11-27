@@ -3,7 +3,7 @@ import os
 import cPickle as pickle
 #import glob
 
-def parseXML(file):
+def parse_xml(file):
 	doc = etree.parse(file)
 	root = doc.getroot()
 
@@ -35,40 +35,34 @@ def parseXML(file):
 	body = [str(element) for element in body]
 	body = ' '.join(body)
 
-	article = {"year":year, "month":month, "date":date, "day":day, "pagenum": pagenum, "pagesect":pagesect, "pagecol": pagecol, "descriptors": descriptors, "taxclass": taxclass, "general_desc": general_desc, "headline": headline, "lead": lead, "body":body}
+	#this is pretty hacky...only works if IDs are 7 digits or less
+	id = str(doc.docinfo.URL)[0:7]
+
+	article = {"id":id, "year":year, "month":month, "date":date, "day":day, "pagenum": pagenum, "pagesect":pagesect, "pagecol": pagecol, "descriptors": descriptors, "taxclass": taxclass, "general_desc": general_desc, "headline": headline, "lead": lead, "body":body}
 
 	return article
 
+def parse_dir(root_dir):
+	articles = []
+	for root, dirs, files in os.walk(root_dir):
+		for file in files:
+			f = os.path.join(root, file)
+			try:
+				articles.append(parse_xml(f))
+			except:
+				print "There is something wrong with %s" % file
+
+	#do pickle dump outside of main method
+	os.chdir(root_dir + 'pickle/')
+	p = open('nytimes2000.pkl', 'wb')
+	pickle.dump(articles, p)
+	p.close()
 
 #parsing NYTimes articles from 2000
 def main():	
 	main_path = "/home/rebecca/Desktop/final project/"
+	parse_dir(main_path + '2000/')
 	os.chdir(main_path)
-	
-	articles = []
-
-	#change this to glob eventually
-	year_path = main_path + "2000/"
-	year_listing = os.listdir(year_path)
-	for month_dir in year_listing:
-		month_path = year_path + "/%s" % month_dir
-		os.chdir(month_path)
-		month_listing = os.listdir(month_path)
-		for day_dir in month_listing:
-			day_path = month_path + "/%s" % day_dir
-			os.chdir(day_path)
-			day_listing = os.listdir(day_path)
-			for file in day_listing:
-				try:
-					articles.append(parseXML(file))
-					break #for now, work with just one article
-				except:
-					print "There is a problem with %s" %file
-
-	os.chdir(main_path)
-	f = open('nytimes2000.pkl', "w")
-	pickle.dump(articles, f)
-	f.close()
 
 if __name__ == '__main__':
 	main()
