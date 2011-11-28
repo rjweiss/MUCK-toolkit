@@ -6,8 +6,8 @@ import nltk
 import nltk.data
 from nltk.tokenize.punkt import PunktSentenceTokenizer, PunktWordTokenizer
 from nltk import bigrams, trigrams
+from nltk.tag.stanford import StanfordTagger
 import itertools
-import re
 
 def get_tokens(dict):
 	#using the punkt tokenizer because it is trained on real data
@@ -37,12 +37,18 @@ def get_ngrams(dict):
 	dict['body_bigrams'] = bigrams(dict['body_words'])
 	dict['body_trigrams'] = trigrams(dict['body_words'])
 
-#	def tagging(self):
+def get_tags(dict):
+	st = StanfordTagger('/home/rebecca/Desktop/fp/newspaper-project/stanford/models/bidirectional-distsim-wsj-0-18.tagger','/home/rebecca/Desktop/fp/newspaper-project/stanford/stanford-postagger.jar')
+	dict['headline_tags'] = st.tag(dict['headline_words'])
+	dict['lead_tags'] = st.tag(dict['lead_words'])
+	#TODO: full body tagging takes a LOOONG time
+	#dict['body_tags'] = st(dict['body_words'])
 
-def convert_dir(file):
-		article = pickle.load(open(file))
+def process_article(file):
+		article = pickle.load(open(file, 'rb'))
 		get_tokens(article)
 		get_ngrams(article)
+		get_tags(article)
 
 		p = open(file + '.nltk', 'wb')
 		pickle.dump(article, p)
@@ -51,8 +57,8 @@ def convert_dir(file):
 def main():
 	file = sys.argv[1]
 	if file.endswith('.pkl'):
-		print "Converting " + file
-		convert_dir(file)
+		print "Processing " + file
+		process_article(file)
 	
 if __name__ == '__main__':
 	main()
