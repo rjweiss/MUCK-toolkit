@@ -11,12 +11,13 @@ def unique(inlist):
 	return uniques
 
 def main():
-	main_path = sys.argv[1]
-	os.chdir(sys.argv[2])
+	root_path = sys.argv[1]
+	main_path = root_path + '/' + sys.argv[2]
+	os.chdir(sys.argv[3])
 	test = open('test.txt', 'wb')
 	train = open('train.txt', 'wb')
-	#keys = ['headline_words', 'body_words', 'body_bigrams']
-	keys = ['headline_words', 'body_words']
+	keys = ['headline', 'body', 'descriptors', 'taxclass']
+	prev_dict = {}
 	for root, dirs, files in os.walk(main_path):
 		for file in files:
 			if file.endswith('.nltk'):
@@ -25,7 +26,26 @@ def main():
 					outfile = test
 				f = os.path.join(root, file)
 				article = pickle.load(open(f, 'rb'))
-				#sub_article = dict([(key, article[key]) for key in keys if key in article]) 
+#				if int(article['date']) > 1:
+#					prev_date = '%d/%02d/%02d' % (int(article['year']), int(article['month']),  int(article['date']) - 1)
+#				else:
+#					prev_date = '%d/%02d/%02d' % (int(article['year']), int(article['month']),  int(article['date'])) #TODO: Change to previous month
+#				#sub_article = dict([(key, article[key]) for key in keys if key in article]) 
+
+#				try:
+#					prev_headlines = prev_dict[prev_date]
+#				except:
+#					prev_headlines = []
+#					for root2, dirs2, files2 in os.walk(root_path + '/' + prev_date):
+#						for file2 in files2:
+#							if file2.endswith('.nltk'):
+#								f2 = os.path.join(root2, file2)
+#								article2 = pickle.load(open(f2, 'rb'))
+#								prev_headlines += article2['headline_words']
+#					prev_dict[prev_date] = prev_headlines
+#
+#				article['prev_headline_words'] = prev_headlines
+				
 				if (article['pagenum'] == "1"):
 					outfile.write("1\t")
 				else:
