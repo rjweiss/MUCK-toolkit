@@ -1,62 +1,81 @@
 from lxml import etree
 import os
-import cPickle as pickle
+import sys
+import traceback
+from datetime import datetime
+from pymongo import Connection
+
+#import cPickle as pickle
 #import glob
 
+"""
+HOW TO USE: nytimes_parser sourcedir targetdb
+
+"""
 def parse_xml(file):
+	
 	doc = etree.parse(file)
 	root = doc.getroot()
 
 	#meta data
-	pagenum = root.xpath('//head/meta[@name="print_page_number"]')[0].get("content")
-	pagesect = root.xpath('//head/meta[@name="print_section"]')[0].get("content")
-	pagecol = root.xpath('//head/meta[@name="print_column"]')[0].get("content")
-	month = root.xpath('//head/meta[@name="publication_month"]')[0].get("content")
-	date = root.xpath('//head/meta[@name="publication_day_of_month"]')[0].get("content")
-	year = root.xpath('//head/meta[@name="publication_year"]')[0].get("content")
-	day = root.xpath('//head/meta[@name="publication_day_of_week"]')[0].get("content")
+	try:
+		pagenum = root.xpath('//head/meta[@name="print_page_number"]')[0].get("content")
+	except:
+		pagenum = ""
+		print "missing page number: %s" % file
+	try:
+		month = root.xpath('//head/meta[@name="publication_month"]')[0].get("content")
+		date = root.xpath('//head/meta[@name="publication_day_of_month"]')[0].get("content")
+		year = root.xpath('//head/meta[@name="publication_year"]')[0].get("content")
+		day = root.xpath('//head/meta[@name="publication_day_of_week"]')[0].get("content")
+		date_string = month + '/' + date + '/' + year
+		date_obj = datetime.strptime(date_string, '%m/%d/%Y')
+	except:
+		date_obj = ""
+		print "malformed date: %s" % file
+	
+	#need to make datetime object from month date year
 
+	
 	#docdata
-	descriptors = root.xpath('//head/docdata/identified-content/classifier[@type="descriptor"]/text()')
-	taxclass = root.xpath('//head/docdata/identified-content/classifier[@type="taxonomic_classifier"]/text()')
-	general_desc = root.xpath('//head/docdata/identified-content/classifier[@type="general_descriptor"]/text()')
 
 	#body data
-	headline = root.xpath('//body/body.head/hedline/hl1')[0].text
-	lead = root.xpath('//body/body.content/block[@class="lead_paragraph"]/p/text()')
-	body = root.xpath('//body/body.content/block[@class="full_text"]/p/text()')
+	try:
+		headline = root.xpath('//body/body.head/hedline/hl1')[0].text
+	except:
+		headline = ""
+		print "missing headline: %s" % file
 
-	#.xpath() returns some implicit methods which don't jive with pickle, so you want to make sure everything is a string
-	descriptors = [str(element) for element in descriptors]
-	taxclass = [str(element) for element in taxclass]
-	general_desc = [str(element) for element in general_desc]
-	lead = [str(element) for element in lead]
-	lead = ' '.join(lead)
-	body = [str(element) for element in body]
-	body = ' '.join(body)
+	try:
+		body = root.xpath('//body/body.content/block[@class="full_text"]/p/text()')
+		body = [str(element) for element in body]
+		body = ' '.join(body)
+	except:
+		body = ""
+		print "error parsing body text: %s" % file
 
-	article = {"year":year, "month":month, "date":date, "day":day, "pagenum": pagenum, "pagesect":pagesect, "pagecol": pagecol, "descriptors": descriptors, "taxclass": taxclass, "general_desc": general_desc, "headline": headline, "lead": lead, "body":body, 'file': file}
-
-	return article
+	return {"newspaper": "nytimes", "date": date_obj, "headline": headline, "body": body, "pagenum": pagenum, "file": os.path.basename(file)}
 
 def parse_dir(root_dir):
-	articles = []
+	c = Connection("localhost")
+	db = c.test
+	articles = db.articles
 	for root, dirs, files in os.walk(root_dir):
 		for file in files:
 			f = os.path.join(root, file)
-			try:
-				article = parse_xml(f)
-				p = open(f + '.pkl', 'wb')
-				pickle.dump(article, p)
-				p.close()
-			except:
-				print "There is something wrong with %s" % file
+			if f.endswith(".xml"):
+				try:
+					article = parse_xml(f)
+					#print article
+					articles.insert(article)
+					#articles.insert(parse_xml(f))
+				except:
+					print "exception parsing file: %s" % f
+					print traceback.print_exc()
+					os._exit(0)
 
-#parsing NYTimes articles from 2000
-def main():	
-	main_path = "/home/rebecca/Desktop/fp/"
-	parse_dir(main_path + '2000/')
-	os.chdir(main_path)
+def main():
+	parse_dir(sys.argv[1])
 
 if __name__ == '__main__':
 	main()
