@@ -9,7 +9,7 @@ from pymongo import Connection
 #import glob
 
 """
-HOW TO USE: nytimes_parser sourcedir targetdb
+HOW TO USE: nytimes_parser sourcedir 
 
 """
 def parse_xml(file):
