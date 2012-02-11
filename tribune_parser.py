@@ -5,60 +5,50 @@ import traceback
 from datetime import datetime
 from pymongo import Connection
 
-#import cPickle as pickle
-#import glob
-
 """
 HOW TO USE: nytimes_parser sourcedir 
 
 """
+
 def parse_xml(file):
 	
 	doc = etree.parse(file)
 	root = doc.getroot()
 
 	#meta data
+	try: 
+		newspaper = root.xpath('//pmtitle')[0].text
+	except:
+		newspaper = ""
+		print "missing newspaper title: %s" % file
 	try:
-		pagenum = root.xpath('//head/meta[@name="print_page_number"]')[0].get("content")
+		pagenum = root.xpath('//startpg')[0].text
 	except:
 		pagenum = ""
 		print "missing page number: %s" % file
 	try:
-		month = root.xpath('//head/meta[@name="publication_month"]')[0].get("content")
-		date = root.xpath('//head/meta[@name="publication_day_of_month"]')[0].get("content")
-		year = root.xpath('//head/meta[@name="publication_year"]')[0].get("content")
-		day = root.xpath('//head/meta[@name="publication_day_of_week"]')[0].get("content")
-		date_string = month + '/' + date + '/' + year
-		date_obj = datetime.strptime(date_string, '%m/%d/%Y')
+		date_string = root.xpath('//pcdta')[0].text
+		date_obj = datetime.strptime(date_string, '%b %d, %Y')
 	except:
 		date_obj = ""
 		print "malformed date: %s" % file
 	
-	#need to make datetime object from month date year
-
-	
-	#docdata
-
 	#body data
 	try:
-		headline = root.xpath('//body/body.head/hedline/hl1')[0].text
+		headline = root.xpath('//doctitle')[0].text
 	except:
 		headline = ""
 		print "missing headline: %s" % file
 
 	try:
-		body = root.xpath('//body/body.content/block[@class="full_text"]/p/text()')
-		body = [unicode(element) for element in body]
+		body = root.xpath('//txtdt/text/*/text()')
+		body = [str(element) for element in body]
 		body = ' '.join(body)
-	except UnicodeError:
-		#print unicode(body)
-		body = ""
-		print "unicode error: %s" % file
 	except:
 		body = ""
 		print "error parsing body text: %s" % file
 
-	return {"newspaper": "New York Times", "date": date_obj, "headline": headline, "body": body, "pagenum": pagenum, "file": os.path.basename(file)}
+	return {"newspaper": newspaper, "date": date_obj, "headline": headline, "body": body, "pagenum": pagenum, "file": os.path.basename(file)}
 
 def parse_dir(root_dir):
 	c = Connection("localhost")
@@ -70,7 +60,6 @@ def parse_dir(root_dir):
 			if f.endswith(".xml"):
 				try:
 					#article = parse_xml(f)
-					#print article
 					#articles.insert(article)
 					articles.insert(parse_xml(f))
 				except:
