@@ -58,7 +58,7 @@ def parse_xml(file):
 		body = ""
 		print "error parsing body text: %s" % file
 
-	return {"newspaper": "New York Times", "date": date_obj, "headline": headline, "body": body, "pagenum": pagenum, "file": os.path.basename(file)}
+	return {"newspaper": "New York Times", "date": date_obj, "headline": headline, "body": body, "pagenum": pagenum, "file": os.path.basename(file), "path": os.path.relpath(file, "/media/NEWSPAPER")}
 
 def parse_dir(root_dir):
 	c = Connection("localhost")
@@ -72,6 +72,7 @@ def parse_dir(root_dir):
 					#article = parse_xml(f)
 					#print article
 					#articles.insert(article)
+					#print(parse_xml(f)["path"])
 					articles.insert(parse_xml(f))
 				except:
 					print "exception parsing file: %s" % f

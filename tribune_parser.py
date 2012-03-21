@@ -6,7 +6,7 @@ from datetime import datetime
 from pymongo import Connection
 
 """
-HOW TO USE: nytimes_parser sourcedir 
+HOW TO USE: tribune_parser sourcedir 
 
 """
 
