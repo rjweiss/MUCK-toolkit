@@ -1,10 +1,15 @@
 package edu.stanford.rjweiss.newspaper;
 
 import com.mongodb.*;
+import edu.stanford.nlp.ie.AbstractSequenceClassifier;
+import edu.stanford.nlp.ie.crf.CRFClassifier;
+import edu.stanford.nlp.ling.CoreAnnotations;
+import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.pipeline.Annotation;
+import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import edu.stanford.nlp.util.CoreMap;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -16,6 +21,7 @@ import java.util.GregorianCalendar;
 
 public class NewspaperProject {
     public static void main(String[] args) throws Exception {
+
         Mongo m = new Mongo();
         DB db = m.getDB("test");
         DBCollection articles = db.getCollection("articles");
@@ -23,31 +29,37 @@ public class NewspaperProject {
         DBCursor cur;
         BasicDBObject query = new BasicDBObject();
 
-//      some tutorial exploration
-//        int n = 0;
-
-//        while (cur.hasNext() && n++ < 100) {
-//            System.out.println(cur.next());
-//        }
-//        System.out.println(myDoc);
-//        System.out.println(articles.getCount());
-
-
-//        retrieve a single document
-//        query.put("file", "66276940.xml"); //returns a single document, the string is the name of the .xml file
-//        cur = articles.find(query); // will retrieve the document in the articles collection that matches the .xml query
-
-//        this section will print out the document retrieved
-//        while (cur.hasNext()) {
-//            DBObject o = cur.next();
-//            System.out.println(o);
-//        }
-
         Calendar cal = new GregorianCalendar();
         cal.set(2010, 0, 1); // retrieving from January 1st, 2010
         Date fromDate = cal.getTime();
         query.put("date", new BasicDBObject("$gte", fromDate));
         System.out.println(articles.count(query)); //returns 157134 total articles
 
+        Properties p = new Properties();
+        p.put("annotators", "tokenize, ssplit, pos, lemma, ner");
+        StanfordCoreNLP pipeline = new StanfordCoreNLP(p);
+
+        AbstractSequenceClassifier classifier = CRFClassifier.getClassifierNoExceptions("edu/stanford/nlp/models/ner/english.all.3class.distsim.crf.ser.gz");
+
+        //Testing NER for just one article
+        printNamedEntities(pipeline, classifier, (String)myDoc.get("body"));
+
+    }
+
+    private static void printNamedEntities(StanfordCoreNLP pipeline, AbstractSequenceClassifier classifier, String text) {
+        Annotation document = new Annotation(text);
+        pipeline.annotate(document);
+
+        List<CoreMap> sentences = document.get(CoreAnnotations.SentencesAnnotation.class);
+        for (CoreMap sentence : sentences) {
+            List<List<CoreLabel>> symbols = classifier.classify(sentence.toString());
+            for (List<CoreLabel> labels : symbols) {
+                for (CoreLabel label : labels) {
+                    String currentLabel = label.get(CoreAnnotations.AnswerAnnotation.class);
+                    String currentText = label.get(CoreAnnotations.TextAnnotation.class);
+                    System.out.println(currentText + "(" + currentLabel + ")");
+                }
+            }
+        }
     }
 }
