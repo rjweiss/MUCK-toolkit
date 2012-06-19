@@ -1,4 +1,4 @@
-package edu.stanford.rjweiss.newspaper;
+package edu.stanford.pcl.newspaper;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;

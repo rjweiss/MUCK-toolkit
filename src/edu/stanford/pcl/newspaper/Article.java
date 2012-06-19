@@ -1,4 +1,4 @@
-package edu.stanford.rjweiss.newspaper;
+package edu.stanford.pcl.newspaper;
 
 /**
  * Created by IntelliJ IDEA.
