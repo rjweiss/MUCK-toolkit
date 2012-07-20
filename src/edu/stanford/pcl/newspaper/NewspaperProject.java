@@ -1,13 +1,13 @@
 package edu.stanford.pcl.newspaper;
 
+import com.mongodb.*;
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.util.CoreMap;
 
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,18 +20,18 @@ import java.util.Properties;
 public class NewspaperProject {
     public static void main(String[] args) throws Exception {
 
-//        Mongo m = new Mongo();
-//        DB db = m.getDB("test");
-//        DBCollection articles = db.getCollection("articles");
-//        DBObject myDoc = articles.findOne();
-//        DBCursor cur;
-//        BasicDBObject query = new BasicDBObject();
+        Mongo m = new Mongo();
+        DB db = m.getDB("test");
+        DBCollection articles = db.getCollection("articles");
+        DBObject myDoc = articles.findOne();
+        DBCursor cur;
+        BasicDBObject query = new BasicDBObject();
 
-//        Calendar cal = new GregorianCalendar();
-//        cal.set(2010, 0, 1); // retrieving from January 1st, 2010
-//        Date fromDate = cal.getTime();
-//        query.put("date", new BasicDBObject("$gte", fromDate));
-//        System.out.println(articles.count(query)); //returns 157134 total articles
+        Calendar cal = new GregorianCalendar();
+        cal.set(2010, 0, 1); // retrieving from January 1st, 2010
+        Date fromDate = cal.getTime();
+        query.put("date", new BasicDBObject("$gte", fromDate));
+        System.out.println(articles.count(query)); //returns 157134 total articles
 
         String text = "Supporters of Bailout Claim Victory in Greek Election\n" +
                 "By RACHEL DONADIO\n" +
