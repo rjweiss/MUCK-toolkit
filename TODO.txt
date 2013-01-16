@@ -1,0 +1,13 @@
+
+probably remove the news- prefix on init.d scripts
+add gc data to logs
+create new ami
+
+Investigate:
+
+CoreNlpTask.execute(): /news/data/latimes/2000/20000129/1105885/txt/48562238.xml
+Unknown variable: TWILIGHT
+ParserTask.execute(): /news/data/latimes/2000/20000129/1105885/txt/48562331.xml
+
+CoreNlpTask.execute(): /news/data/latimes/2000/20000129/1105885/txt/48562331.xml
+Unknown variable: WEEKDAY
