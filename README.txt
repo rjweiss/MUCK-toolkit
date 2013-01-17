@@ -1,10 +1,13 @@
-
 To build, see BUILD.txt
 
-To run, you will need to:
+To run, see following:
 
-*
+Running the TaskServer
+  * service news-MongoDB start      # start the MongoDB daemon
+  * service news-TaskServer start   # start the TaskServer daemon
 
+Running the TaskWorker
+  * service news-TaskWorker start   # start the TaskWorker daemon
 
 EBS Volume Information
 
@@ -27,21 +30,6 @@ Instance Information
         * vendor
       * /mnt/sdf                    # mount point for Raw Data EBS volume
       * /mnt/sdg                    # mount point for MongoDB EBS volume
-
-
-Running the TaskServer
-  * service news-MongoDB start      # start the MongoDB daemon
-  * service news-TaskServer start   # start the TaskServer daemon
-
-Running the TaskWorker
-  * tail -f log/server.log          # run this in another shell if you want to watch server activity
-  * service news-TaskWorker start   # start the TaskWorker daemon
-
-
-
-
-
-
 
 Notes on setting up the task server:
 
