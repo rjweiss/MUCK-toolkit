@@ -29,6 +29,20 @@ Instance Information
       * /mnt/sdg                    # mount point for MongoDB EBS volume
 
 
+Running the TaskServer
+  * service news-MongoDB start      # start the MongoDB daemon
+  * service news-TaskServer start   # start the TaskServer daemon
+
+Running the TaskWorker
+  * tail -f log/server.log          # run this in another shell if you want to watch server activity
+  * service news-TaskWorker start   # start the TaskWorker daemon
+
+
+
+
+
+
+
 Notes on setting up the task server:
 
 * Start with an Amazon Linux instance.
@@ -67,3 +81,4 @@ Notes on setting up the task server:
 
 * Run mongodb.
   # vendor/mongodb/bin/mongod --dbpath /news/db
+

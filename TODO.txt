@@ -3,7 +3,9 @@ Next:
   set up worker server to start in worker ami
   worker ami should not have a copy of the raw data or db volumes
   finish creating new amazon linux ami, updating readme
+  get TaskQueue size from a property when you run TaskServer
 
+  fix news.properties pathing from scripts
   write code to reinsert dropped tasks into the queue
   gracefully handle network disconnects
 

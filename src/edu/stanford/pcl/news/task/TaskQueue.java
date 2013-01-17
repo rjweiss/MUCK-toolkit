@@ -11,7 +11,7 @@ public class TaskQueue implements Serializable {
     ArrayBlockingQueue<Task> queue;
 
     public TaskQueue() {
-        //  XXX  Refine capacity.
+        //  XXX  Refine capacity (this caps the amount of workers in the pool).
         this.queue = new ArrayBlockingQueue<Task>(3);
     }
 

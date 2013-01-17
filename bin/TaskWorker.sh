@@ -1,1 +1,0 @@
-java -Xmx3g -cp "/news/lib/*" edu.stanford.pcl.news.task.TaskWorker
