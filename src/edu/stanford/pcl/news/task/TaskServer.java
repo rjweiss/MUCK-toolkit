@@ -1,12 +1,19 @@
 
 package edu.stanford.pcl.news.task;
 
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
+import edu.stanford.pcl.news.NewsProperties;
 import edu.stanford.pcl.news.corenlp.CoreNlpTask;
+import edu.stanford.pcl.news.model.Serialization;
+import edu.stanford.pcl.news.model.db.DbConnection;
 import edu.stanford.pcl.news.parser.ParserTask;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
@@ -35,11 +42,13 @@ public class TaskServer implements RemoteTaskServer {
 
     private TaskQueue taskQueue;
     private TaskQueue returnQueue;
+    private DbConnection dbConnection;
 
 
-    private TaskServer() {
+    private TaskServer() throws UnknownHostException {
         this.taskQueue = new TaskQueue();
         this.returnQueue = new TaskQueue();
+        this.dbConnection = new DbConnection("news");
     }
 
 
@@ -58,6 +67,10 @@ public class TaskServer implements RemoteTaskServer {
         else if (task instanceof CoreNlpTask) {
             CoreNlpTask t = (CoreNlpTask)task;
             System.out.printf("%d\tCoreNlpTask\t%d\t%d\t%s\n", System.currentTimeMillis(), t.getArticle().body.length(), task.executionMillis, t.getArticle().file);
+
+            // XXX  Not sure if this should really happen here, but...
+            DBCollection articles = dbConnection.getCollection("articles");
+            articles.save((DBObject)JSON.parse(Serialization.toJson(t.getArticle())));
         }
     }
 
@@ -98,16 +111,14 @@ public class TaskServer implements RemoteTaskServer {
             System.out.println("Server ready.");
 
             // For now, simply enqueue a task for each article.
-            File dataRootDirectory = new File("/news/data/");
-            if (!dataRootDirectory.exists()) {
-                // XXX  Just for development...
-                dataRootDirectory = new File("data");
+            File dataRootDirectory = new File(NewsProperties.getProperty("data.root.path"));
+            if (dataRootDirectory.exists()) {
+                server.traverse(dataRootDirectory);
             }
-            server.traverse(dataRootDirectory);
 
             System.out.println("Traversal completed.");
         }
-        catch (RemoteException e) {
+        catch (Exception e) {
             // XXX ...
             e.printStackTrace();
         }

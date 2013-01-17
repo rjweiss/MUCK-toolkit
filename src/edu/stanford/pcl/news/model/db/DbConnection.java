@@ -13,7 +13,7 @@ public class DbConnection {
     DB db;
 
     public DbConnection(String dbName) throws UnknownHostException {
-        String host = (String)NewsProperties.getProperty("model.db.host");
+        String host = NewsProperties.getProperty("model.db.host");
         this.mongo = new Mongo(host);
         this.db = mongo.getDB(dbName);
     }

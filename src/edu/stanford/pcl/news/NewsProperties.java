@@ -9,13 +9,14 @@ import java.util.Properties;
 public class NewsProperties {
     private static Properties defaults = new Properties();
     static {
-        defaults.put("model.db.host", "localhost");
+        defaults.setProperty("model.db.host", "localhost");
+        defaults.setProperty("data.root.path", "/news/data");
     }
 
     private static NewsProperties singleton = new NewsProperties();
 
-    public static Object getProperty(Object key) {
-        return singleton.properties.get(key);
+    public static String getProperty(String key) {
+        return singleton.properties.getProperty(key);
     }
 
 

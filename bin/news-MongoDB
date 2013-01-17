@@ -1,0 +1,35 @@
+#!/bin/sh
+#
+# chkconfig: 345 99 01
+# description: news mongodb server
+#
+
+case $1 in
+    start)
+        echo "MongoDB starting"
+        /news/vendor/mongodb/bin/mongod --fork --dbpath /news/db/ --logpath /news/log/mongodb/mongodb.log
+        ;;
+    restart)
+        if pgrep -f "mongod --fork --dbpath /news/db/"; then
+            echo "MongoDB stopping"
+            /news/vendor/mongodb/bin/mongod --shutdown --dbpath /news/db
+        fi
+        echo "MongoDB starting"
+        /news/vendor/mongodb/bin/mongod --fork --dbpath /news/db/ --logpath /news/log/mongodb/mongodb.log
+        ;;
+    status)
+        if pgrep -f "mongod --fork --dbpath /news/db/"; then
+            echo "MongoDB running"
+        else
+            echo "MongoDB stopped"
+        fi
+        ;;
+    stop)
+        echo "MongoDB stopping"
+        if pgrep -f "mongod --fork --dbpath /news/db/"; then
+            /news/vendor/mongodb/bin/mongod --shutdown --dbpath /news/db
+        else
+            echo "MongoDB already stopped"
+        fi
+        ;;
+esac

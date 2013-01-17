@@ -1,0 +1,38 @@
+#!/bin/sh
+#
+# chkconfig: 345 99 01
+# description: news task worker
+#
+
+TASKSERVERID=`ec2-describe-instances | grep TaskServer | cut -f 3`
+TASKSERVERHOST=`ec2-describe-instances | grep ^INSTANCE | grep $TASKSERVERID | cut -f 5`
+
+case $1 in
+    start)
+        echo "TaskWorker starting"
+        /usr/bin/java -Xmx3g -cp "/news/lib/*" edu.stanford.pcl.news.task.TaskWorker service --taskserver=$TASKSERVERHOST & 1>/news/log/worker.log 2>&1
+        ;;
+    restart)
+        if pgrep -f "TaskWorker service"; then
+            echo "TaskWorker stopping"
+            kill `pgrep -f "TaskWorker service"`
+        fi
+        echo "TaskWorker starting"
+        /usr/bin/java -Xmx3g -cp "/news/lib/*" edu.stanford.pcl.news.task.TaskWorker service --taskserver=$TASKSERVERHOST & 1>/news/log/worker.log 2>&1
+        ;;
+    status)
+        if pgrep -f "TaskWorker service"; then
+            echo "TaskWorker running"
+        else
+            echo "TaskWorker stopped"
+        fi
+        ;;
+    stop)
+        echo "TaskWorker stopping"
+        if pgrep -f "TaskWorker service"; then
+            kill `pgrep -f "TaskWorker service"`
+        else
+            echo "TaskWorker already stopped"
+        fi
+        ;;
+esac

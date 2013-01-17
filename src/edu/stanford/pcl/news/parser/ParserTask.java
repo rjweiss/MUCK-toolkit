@@ -25,7 +25,7 @@ public class ParserTask extends Task {
 
     @Override
     public void execute() {
-        System.out.println("ParserTask.execute(): " + filePath);
+        System.out.printf("%d\tParserTask\t%s\n", System.currentTimeMillis(), filePath);
         long start = System.currentTimeMillis();
         try {
 

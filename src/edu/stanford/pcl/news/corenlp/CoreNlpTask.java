@@ -38,7 +38,7 @@ public class CoreNlpTask extends Task {
         // The first factory call for a given set of annotators is expensive.
         StanfordCoreNLP pipeline = CoreNlpFactory.getPipeline("tokenize, ssplit, pos, lemma, ner, parse");
 
-        System.out.println("CoreNlpTask.execute(): " + article.file);
+        System.out.printf("%d\tCoreNlpTask\t%s\n", System.currentTimeMillis(), article.file);
         long start = System.currentTimeMillis();
         try {
             Annotation document = new Annotation(article.body);
