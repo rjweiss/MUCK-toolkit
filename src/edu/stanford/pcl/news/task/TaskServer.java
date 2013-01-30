@@ -41,36 +41,51 @@ public class TaskServer implements RemoteTaskServer {
 
 
     private TaskQueue taskQueue;
-    private TaskQueue returnQueue;
     private DbConnection dbConnection;
 
 
-    private TaskServer() throws UnknownHostException {
+    public TaskServer() throws UnknownHostException {
         this.taskQueue = new TaskQueue();
-        this.returnQueue = new TaskQueue();
         this.dbConnection = new DbConnection("news");
     }
 
 
+    public void start() throws RemoteException {
+        Registry registry = LocateRegistry.getRegistry();
+        registry.rebind("TaskServer", UnicastRemoteObject.exportObject(server, 23456)); //  XXX  Some arbitrary port.
+        System.out.println("Server ready.");
+    }
+
     @Override
     public Task takeTask() throws RemoteException {
-        return taskQueue.take();
+        Task task = taskQueue.take();
+        log("dequeued", task);
+        return task;
     }
 
     @Override
     public void returnTask(Task task) throws RemoteException {
+        log("returned", task);
+
+        boolean resolved = taskQueue.resolve(task);
+        if (!resolved) return;
+
+        log("resolved", task);
+
+        // XXX  Shouldn't do this directly from the server.  Maybe defined in the task or some sort of workload object?
         if (task instanceof ParserTask) {
             ParserTask t = (ParserTask)task;
-            System.out.printf("%d\tParserTask\t%d\t%d\t%s\n", System.currentTimeMillis(), t.getArticle().body.length(), task.executionMillis, t.getArticle().file);
-            returnQueue.put(new CoreNlpTask(((ParserTask)task).getArticle()));
+            if (t.isSuccessful()) {
+                taskQueue.putContinuationTask(new CoreNlpTask(((ParserTask)task).getArticle()));
+            }
         }
         else if (task instanceof CoreNlpTask) {
             CoreNlpTask t = (CoreNlpTask)task;
-            System.out.printf("%d\tCoreNlpTask\t%d\t%d\t%s\n", System.currentTimeMillis(), t.getArticle().body.length(), task.executionMillis, t.getArticle().file);
-
-            // XXX  Not sure if this should really happen here, but...
-            DBCollection articles = dbConnection.getCollection("articles");
-            articles.save((DBObject)JSON.parse(Serialization.toJson(t.getArticle())));
+            if (t.isSuccessful()) {
+                // XXX  Not sure if this should really happen here, but...
+                DBCollection articles = dbConnection.getCollection("articles");
+                articles.save((DBObject)JSON.parse(Serialization.toJson(t.getArticle())));
+            }
         }
     }
 
@@ -82,12 +97,9 @@ public class TaskServer implements RemoteTaskServer {
         for (File f : files) {
             if (f.isFile() && f.getName().endsWith(".xml")) {
                 try {
-                    // Schedule a task from the return queue before scheduling any more new tasks.
-                    if (returnQueue.peek() != null) {
-                        taskQueue.put(returnQueue.poll());
-                    }
                     Task task = new ParserTask(f.getAbsolutePath(), readFile(f));
-                    taskQueue.put(task);
+                    taskQueue.putPrimaryTask(task);
+                    log("enqueued", task);
                 }
                 catch (IOException e) {
                     // XXX  Log and skip it?
@@ -100,15 +112,18 @@ public class TaskServer implements RemoteTaskServer {
     }
 
 
+    private static void log(String operation, Task task) {
+        System.out.printf("%d\t%s\t%s\n", System.currentTimeMillis(), operation, task);
+    }
 
     public static void main(String[] args) {
         try {
-            Registry registry = LocateRegistry.getRegistry();
-
             server = new TaskServer();
-            registry.rebind("TaskServer", UnicastRemoteObject.exportObject(server, 23456)); //  XXX  Some arbitrary port.
+            server.start();
 
-            System.out.println("Server ready.");
+            // Print log column headers.
+            System.out.println("UNIXTIMESTAMP\tOPERATION\tTASKNAME\tVMID\tDONE\tSUCCESS\tMS\tFILE");
+
 
             // For now, simply enqueue a task for each article.
             File dataRootDirectory = new File(NewsProperties.getProperty("data.root.path"));

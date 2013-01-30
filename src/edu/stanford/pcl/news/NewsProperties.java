@@ -11,6 +11,9 @@ public class NewsProperties {
     static {
         defaults.setProperty("model.db.host", "localhost");
         defaults.setProperty("data.root.path", "/news/data");
+        defaults.setProperty("task.queue.size", "4");           // XXX  Probably remove.
+        defaults.setProperty("task.retry.seconds", "300");
+        defaults.setProperty("corenlp.parse.maxlen", "150");
     }
 
     private static NewsProperties singleton = new NewsProperties();

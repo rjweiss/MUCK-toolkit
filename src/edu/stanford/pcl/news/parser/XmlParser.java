@@ -12,7 +12,8 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
-import java.io.File;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.Map;
 
@@ -61,11 +62,12 @@ class XmlParser extends Parser {
 
 
     @Override
-    public Article parse(String path) throws ParseException {
+    public Article parse(String filePath, String xml) throws ParseException {
         Article article = new Article();
 
         try {
-            Document document = documentBuilder.parse(new File(path));
+            InputStream in = new ByteArrayInputStream(xml.getBytes("UTF-8"));
+            Document document = documentBuilder.parse(in);
 
             if (excludeConditionsMap != null) {
                 for (Map.Entry<String, String> exclude : excludeConditionsMap.entrySet()) {
@@ -78,7 +80,7 @@ class XmlParser extends Parser {
             }
 
             article.outlet = outlet;
-            article.file = path;  // XXX  Relative or absolute?
+            article.file = filePath;  // XXX  Relative or absolute?
 
             for (Field field : article.getClass().getFields()) {
                 String fieldName = field.getName();
@@ -87,7 +89,7 @@ class XmlParser extends Parser {
                     XPathExpression xPathExpression = xpath.compile(expression);
                     NodeList nodes = (NodeList)xPathExpression.evaluate(document, XPathConstants.NODESET);
                     if (nodes == null) {
-                        System.err.println(path + ": " + fieldName + " missing");
+                        System.err.println(filePath + ": " + fieldName + " missing");
                     }
                     else {
                         StringBuilder builder = new StringBuilder();

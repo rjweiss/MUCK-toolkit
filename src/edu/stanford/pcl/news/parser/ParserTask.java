@@ -19,32 +19,42 @@ public class ParserTask extends Task {
         this.xml = xml;
     }
 
+    public String getFilePath() {
+        return filePath;
+    }
+
     public Article getArticle() {
         return article;
     }
 
     @Override
     public void execute() {
-        System.out.printf("%d\tParserTask\t%s\n", System.currentTimeMillis(), filePath);
+        log(String.format("%s\t%s", "start", filePath));
         long start = System.currentTimeMillis();
         try {
 
+            // XXX  This is weak.  Should probably use some sort of signature.
             ParserFactory.Outlet outlet = null;
-            if (this.filePath.contains("nytimes")) {
+            if (this.filePath.contains("new-york-times")) {
                 outlet = ParserFactory.Outlet.NEW_YORK_TIMES;
             }
-            else if (this.filePath.contains("latimes")) {
+            else if (this.filePath.contains("los-angeles-times")) {
                 outlet = ParserFactory.Outlet.LOS_ANGELES_TIMES;
             }
-            else if (this.filePath.contains("chitrib")) {
+            else if (this.filePath.contains("chicago-tribune")) {
                 outlet = ParserFactory.Outlet.CHICAGO_TRIBUNE;
+            }
+            else if (this.filePath.contains("baltimore-sun")) {
+                outlet = ParserFactory.Outlet.BALTIMORE_SUN;
             }
 
             if (outlet != null) {
                 try {
                     Parser parser = ParserFactory.getParser(outlet);
-                    this.article = parser.parse(this.filePath);
-//                    String string = Serialization.toJson(article);
+                    this.article = parser.parse(this.filePath, this.xml);
+                    if (this.article != null) {
+                        this.successful = true;
+                    }
                 }
                 catch (ParseException e) {
                     // XXX  Do something...?
@@ -56,7 +66,12 @@ public class ParserTask extends Task {
             long stop = System.currentTimeMillis();
             this.executionMillis = stop - start;
             this.complete = true;
+            log(String.format("%s\t%s", "stop", filePath));
         }
     }
 
+    @Override
+    public String toString() {
+        return String.format("%s\t%s", super.toString(), filePath);
+    }
 }

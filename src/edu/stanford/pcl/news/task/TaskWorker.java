@@ -14,7 +14,7 @@ public class TaskWorker extends Thread {
     protected Map<String, Object> resources;
 
     public TaskWorker() {
-        this.id = ManagementFactory.getRuntimeMXBean().getName();
+        this.id = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];  // XXX  Name based on PID.  This doesn't work well.
         this.resources = new HashMap<String, Object>();
         this.setDaemon(false);
     }
@@ -29,6 +29,7 @@ public class TaskWorker extends Thread {
 
             Task task;
             while ((task = server.takeTask()) != null) {
+                task.setWorkerId(this.id);
                 task.execute();
                 server.returnTask(task);
             }

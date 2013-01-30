@@ -1,19 +1,10 @@
 
 Next:
-  set up worker server to start in worker ami
-  worker ami should not have a copy of the raw data or db volumes
   finish creating new amazon linux ami, updating readme
   get TaskQueue size from a property when you run TaskServer
 
   fix news.properties pathing from scripts
-  write code to reinsert dropped tasks into the queue
-  gracefully handle network disconnects
-
   add mechanism for feeding new tasks into the server manually/interactively
-
-  verify whether manually created & attached volumes get destroyed when an instance is terminated
-  add gc data to logs
-
   handle duplicate inserts...?  check fs against mongo for directory traversal before scheduling jobs?
   write a script to copy and install project files to server
 
@@ -31,4 +22,4 @@ Investigate:
   Unknown variable: TWILIGHT
   CoreNlpTask.execute(): /news/data/latimes/2000/20000129/1105885/txt/48562331.xml
   Unknown variable: WEEKDAY
-
+  This is happening in edu.stanford.nlp.ling.tokensregex.types.Expressions

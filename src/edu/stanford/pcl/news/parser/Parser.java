@@ -5,6 +5,6 @@ import edu.stanford.pcl.news.model.entity.Article;
 
 public abstract class Parser {
 
-    public abstract Article parse(String path) throws ParseException;
+    public abstract Article parse(String filePath, String xml) throws ParseException;
 
 }
