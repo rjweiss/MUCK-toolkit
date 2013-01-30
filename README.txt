@@ -27,6 +27,7 @@ Instance Information
         * data -> /mnt/sdf/xml
         * db -> /mnt/sdg/db
         * lib
+        * log
         * vendor
       * /mnt/sdf                    # mount point for Raw Data EBS volume
       * /mnt/sdg                    # mount point for MongoDB EBS volume
@@ -46,7 +47,7 @@ Notes on setting up the task server:
     # echo "/dev/sdg    /mnt/sdg    ext4    defaults        0   0" >> /etc/fstab
     # exit
     $ echo "export AWS_ACCESS_KEY=aws-access-key ABCDEFGHIJKLMNOPQRST" >> ~/.bashrc
-    $ echo "export AWS_SECRET_KEY=aws-access-key ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" >> ~/.bashrc
+    $ echo "export AWS_SECRET_KEY=aws-secret-key ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" >> ~/.bashrc
     $ mkdir /news/data
     $ ln -s /mnt/sdf/xml/ /news/data
     $ ln -s /mnt/sdg/db/ /news/db
