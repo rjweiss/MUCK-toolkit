@@ -5,13 +5,14 @@
 #
 
 TASKSERVERHOST=`hostname`
+LOGFILE=/news/log/server-`date +%Y-%m-%d`.log
 
 case $1 in
     start)
         echo "TaskServer starting"
         killall rmiregistry 1>/news/log/server.log 2>&1
         rmiregistry 1>/news/log/server.log 2>&1 &
-        /usr/bin/java -cp "/news/lib/*" -Djava.rmi.server.hostname=$TASKSERVERHOST -Djava.rmi.server.codebase=file:/news/lib/news.jar edu.stanford.pcl.news.task.TaskServer service 1>/news/log/server.log 2>&1 &
+        /usr/bin/java -cp "/news/lib/*" -Djava.rmi.server.hostname=$TASKSERVERHOST -Djava.rmi.server.codebase=file:/news/lib/news.jar edu.stanford.pcl.news.task.TaskServer service 1>$LOGFILE 2>&1 &
         ;;
     restart)
         if pgrep -f "TaskServer service"; then
@@ -21,7 +22,7 @@ case $1 in
         echo "TaskServer starting"
         killall rmiregistry 1>/news/log/server.log 2>&1
         rmiregistry 1>/news/log/server.log 2>&1 &
-        /usr/bin/java -cp "/news/lib/*" -Djava.rmi.server.hostname=$TASKSERVERHOST -Djava.rmi.server.codebase=file:/news/lib/news.jar edu.stanford.pcl.news.task.TaskServer service 1>/news/log/server.log 2>&1 &
+        /usr/bin/java -cp "/news/lib/*" -Djava.rmi.server.hostname=$TASKSERVERHOST -Djava.rmi.server.codebase=file:/news/lib/news.jar edu.stanford.pcl.news.task.TaskServer service 1>$LOGFILE 2>&1 &
         ;;
     status)
         if pgrep -f "TaskServer service"; then
