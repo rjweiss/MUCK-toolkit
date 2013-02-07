@@ -1,7 +1,9 @@
 
 package edu.stanford.pcl.news.parser;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ParserFactory {
@@ -26,9 +28,11 @@ public class ParserFactory {
             featureExpressionMap.put("page", "//head/meta[@name=\"print_page_number\"]/@content");
             featureExpressionMap.put("headline", "//body/body.head/hedline/hl1");
             featureExpressionMap.put("body", "//body/body.content/block[@class=\"full_text\"]");
+            List<String> descriptorExpressions = new ArrayList<String>();
+            descriptorExpressions.add("//head/docdata/identified-content/classifier");
             Map<String, String> excludeConditionsMap = new HashMap<String, String>();
             excludeConditionsMap.put("//head/docdata/identified-content/classifier[@type=\"descriptor\"]", "Deaths (Obituaries)");
-            return new XmlParser(outlet.name, featureExpressionMap, excludeConditionsMap);
+            return new XmlParser(outlet.name, featureExpressionMap, excludeConditionsMap, descriptorExpressions);
         }
         else if (outlet == Outlet.LOS_ANGELES_TIMES || outlet == Outlet.CHICAGO_TRIBUNE || outlet == Outlet.BALTIMORE_SUN) {
             Map<String, String> featureExpressionMap = new HashMap<String, String>();

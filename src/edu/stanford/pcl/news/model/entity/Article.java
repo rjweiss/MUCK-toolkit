@@ -5,6 +5,7 @@ import edu.stanford.pcl.news.model.Serialization;
 import org.bson.types.ObjectId;
 
 import java.io.Serializable;
+import java.util.Set;
 
 public class Article implements Serializable {
     private static final long serialVersionUID = -6060628666990358845L;
@@ -17,7 +18,7 @@ public class Article implements Serializable {
     public String page;
     public String headline;
     public String body;
-
+    public Set<Descriptor> descriptors;
     public CoreNlp corenlp;
 
     @Override

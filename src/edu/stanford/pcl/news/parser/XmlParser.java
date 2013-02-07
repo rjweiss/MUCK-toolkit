@@ -2,7 +2,9 @@
 package edu.stanford.pcl.news.parser;
 
 import edu.stanford.pcl.news.model.entity.Article;
+import edu.stanford.pcl.news.model.entity.Descriptor;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -15,6 +17,8 @@ import javax.xml.xpath.XPathFactory;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,6 +29,7 @@ class XmlParser extends Parser {
     private XPath xpath;
 
     private Map<String, String> featureExpressionMap;
+    private List<String> descriptorExpressions;
     private Map<String, String> excludeConditionsMap;
     private String outlet;
 
@@ -50,14 +55,19 @@ class XmlParser extends Parser {
     }
 
     XmlParser(String outlet, Map<String, String> featureExpressionMap) {
-        this(outlet, featureExpressionMap, null);
+        this(outlet, featureExpressionMap, null, null);
     }
 
     XmlParser(String outlet, Map<String, String> featureExpressionMap, Map<String, String> excludeConditionsMap) {
+        this(outlet, featureExpressionMap, excludeConditionsMap, null);
+    }
+
+    XmlParser(String outlet, Map<String, String> featureExpressionMap, Map<String, String> excludeConditionsMap, List<String> descriptorExpressions) {
         this();
         this.outlet = outlet;
         this.featureExpressionMap = featureExpressionMap;
         this.excludeConditionsMap = excludeConditionsMap;
+        this.descriptorExpressions = descriptorExpressions;
     }
 
 
@@ -98,6 +108,21 @@ class XmlParser extends Parser {
                         }
                         // XXX  Only works for strings!
                         field.set(article, builder.toString());
+                    }
+                }
+            }
+
+            if (descriptorExpressions != null) {
+                for (String expression : descriptorExpressions) {
+                    XPathExpression xPathExpression = xpath.compile(expression);
+                    NodeList nodes = (NodeList)xPathExpression.evaluate(document, XPathConstants.NODESET);
+                    if (nodes != null) {
+                        article.descriptors = new HashSet<Descriptor>();
+                        for (int i=0; i < nodes.getLength(); i++) {
+                            Node node = nodes.item(i);
+                            // XXX  This is not properly decoupled from the New York Times.
+                            article.descriptors.add(new Descriptor(node.getAttributes().getNamedItem("type").getTextContent(), node.getTextContent()));
+                        }
                     }
                 }
             }
