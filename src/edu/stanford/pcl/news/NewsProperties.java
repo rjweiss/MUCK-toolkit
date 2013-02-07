@@ -27,14 +27,26 @@ public class NewsProperties {
 
     private NewsProperties() {
         properties = new Properties(defaults);
-        try {
-            properties.load(new FileInputStream("news.properties"));
-        }
-        catch (FileNotFoundException e) {
-            System.err.println("Could not find properties file (news.properties).  Using defaults.");
-        }
-        catch (IOException e) {
-            System.err.println("Could not read properties file (news.properties).  Using defaults.");
+
+        boolean found = load("/news/news.properties");
+        found |= load("news.properties");
+
+        if (!found) {
+            System.err.println("Could not find news.properties file in either /news or the local directory.  Using defaults.");
         }
     }
+
+
+    private boolean load(String path) {
+        try {
+            properties.load(new FileInputStream(path));
+            return true;
+        }
+        catch (FileNotFoundException e) { /* Okay. */ }
+        catch (IOException e) {
+            System.err.printf("Could not read properties file (%s).\n", path);
+        }
+        return false;
+    }
+
 }
