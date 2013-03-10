@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Rebecca Weiss</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="assets/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+      }
+    </style>
+    <link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="assets/js/html5shiv.js"></script>
+    <![endif]-->
+
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="#">Rebecca Weiss</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+	      <li><a href="#Contact">Contact</a></li>
+              <li><a href="docs/weiss_cv.pdf">C.V.</a></li>
+              <li><a href="#Research">Research</a></li>
+	      <li><a href="http://rjweiss.github.com">Github</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+
+ <xmp style="display:none;">
+
+The MUCK toolkit
+================
+
+MUCK (Mechanical Understanding of Contextual Knowledge) is cloud-driven software for making sense out of large text
+corpora.  This toolkit can be used to take directories of unwieldy
+amounts of text data, extract useful information (both metadata and
+linguistic features like parts-of-speech, named entities, and
+parsed dependencies) from all documents, and construct a comprehensible
+database with all extracted information readibly available.  You can also
+use this toolkit to build classifiers from random subsets of this database (as well as
+classify the rest of your data in the database) relatively easily...just
+not quite yet.
+
+History
+-------
+MUCK was initially written to handle large collections of news content
+and government data, such as newspaper archives, Congressional press
+releases and floor speeches, and legislation.  
+
+Authors
+-------
+MUCK was written by Nick Nugent, Rebecca Weiss, and Sean Westwood.
+
+Version
+-------
+Currently not even in alpha with no immediate plans for release.  Use at your own
+risk!
+
+Tech
+---- 
+MUCK uses a lot of open-source libraries:
+* [Apache Software Foundation] - [Lucene] for text indexing
+* [Stanford NLP group] - [JavaNLP] and [Classifier] for natural language processing
+and machine learning capability.
+* [10Gen] - documents are stored in [MongoDB]
+
+MUCK was designed to integrate onto an [Amazon Web Service] platform,
+and can scale up by distribute across EC2 instances.
+
+MUCK is also intended to complement Amazon Mechanical Turk for creating
+training data for classification tasks (topics, sentiment, etc.).
+
+Installation
+------------
+You can  ```git clone git@github.com:rjweiss/MUCK-toolkit.git``.  But
+you probably won't want to, since you will need to download and maintain your own
+dependencies and build from source on your own system. If you run into
+problems, you are unfortunately on your own.  We break this
+toolkit on a regular basis with our own projects, so there's no
+guarantee that we will be able to solve problems encountered on other
+people's systems. 
+
+License
+-------
+[MIT].  This is free and open-source.  
+
+
+[Apache Software Foundation]: http://www.apache.org/
+[Lucene]: http://lucene.apache.org/
+[Stanford NLP group]: http://www-nlp.stanford.edu/
+[JavaNLP]: http://nlp.stanford.edu/software/corenlp.shtml
+[Classifier]: http://nlp.stanford.edu/software/classifier.html
+[10Gen]: http://www.10gen.com
+[MongoDB]: http://www.mongodb.org
+[MIT]: http://opensource.org/licenses/MIT
+</xmp>
+
+                               
+            
+    </div> <!-- /container -->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="http://strapdownjs.com/v/0.2/strapdown.js"></script>                              
+    <script src="assets/js/jquery.js"></script>
+    <script src="assets/js/bootstrap-transition.js"></script>
+    <script src="assets/js/bootstrap-alert.js"></script>
+    <script src="assets/js/bootstrap-modal.js"></script>
+    <script src="assets/js/bootstrap-dropdown.js"></script>
+    <script src="assets/js/bootstrap-scrollspy.js"></script>
+    <script src="assets/js/bootstrap-tab.js"></script>
+    <script src="assets/js/bootstrap-tooltip.js"></script>
+    <script src="assets/js/bootstrap-popover.js"></script>
+    <script src="assets/js/bootstrap-button.js"></script>
+    <script src="assets/js/bootstrap-collapse.js"></script>
+    <script src="assets/js/bootstrap-carousel.js"></script>
+    <script src="assets/js/bootstrap-typeahead.js"></script>
+
+  </body>
+</html>
