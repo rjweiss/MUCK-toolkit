@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>MUCK toolkit: Mechanical Understanding of Contextual Knowledge by rjweiss</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>MUCK toolkit: Mechanical Understanding of Contextual Knowledge</h1>
+        <p></p>
+
+        <p class="view"><a href="https://github.com/rjweiss/MUCK-toolkit">View the Project on GitHub <small>rjweiss/MUCK-toolkit</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/rjweiss/MUCK-toolkit/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/rjweiss/MUCK-toolkit/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/rjweiss/MUCK-toolkit">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>What is MUCK?</h1>
+
+<p>MUCK is software for making sense out of massive, messy collections of documents.  This toolkit can be used to take directories of unwieldy amounts of texts, extract useful information (both metadata and linguistic features like parts-of-speech, named entities, and parsed dependencies), and construct a comprehensible database with all extracted information readibly available.  You can also use this toolkit to build classifiers from random subsets of this database (as well as classify the rest of the documents in the database) relatively easily...just not quite yet.</p>
+
+<h2>History</h2>
+
+<p>MUCK was initially written to handle large collections of news content
+and government data, such as newspaper archives, Congressional press
+releases/floor speeches, and legislation.  The toolkit was designed to answer many different questions that required natural language understanding of these texts, such as which Congressmen get the most news attention and under what conditions.</p>
+
+<h2>Authors</h2>
+
+<p>MUCK was created by Nick Nugent, <a href="http://www.stanford.edu/%7Erjweiss">Rebecca Weiss</a>, and <a href="http://www.stanford.edu/%7Eseanjw">Sean Westwood</a>.</p>
+
+<h2>Version</h2>
+
+<p>Currently not even in alpha with no immediate plans for release.  Use at your own
+risk!</p>
+
+<h2>Tech</h2>
+
+<p>MUCK uses a lot of open-source libraries:</p>
+
+<ul>
+<li>
+<a href="http://www.apache.org/">Apache Software Foundation</a> - <a href="http://lucene.apache.org/">Lucene</a> for text indexing</li>
+<li>
+<a href="http://www-nlp.stanford.edu/">Stanford NLP group</a> - <a href="http://nlp.stanford.edu/software/corenlp.shtml">JavaNLP</a> and <a href="http://nlp.stanford.edu/software/classifier.html">Classifier</a> for natural language processing
+and machine learning capability.</li>
+<li>
+<a href="http://www.10gen.com">10Gen</a> - documents are stored in <a href="http://www.mongodb.org">MongoDB</a>
+</li>
+</ul><p>MUCK was designed for use on <a href="http://aws.amazon.com">AWS</a> platforms,
+and can scale up by distributing across EC2 instances.  This means that you can add and remove nodes depending on your task.</p>
+
+<p>MUCK is also intended to complement <a href="http://www.mturk.com">Amazon Mechanical Turk</a>, primarily for creating training data needed in classification tasks (topics, sentiment, etc).</p>
+
+<h2>Installation</h2>
+
+<p>You can  <code>git clone git@github.com:rjweiss/MUCK-toolkit.git</code>.  But
+you probably won't want to, since you will need to download and maintain your own dependencies and build from source on your own system. If you run into problems, you are unfortunately on your own.  We break this toolkit on a regular basis with our own projects, so there's no guarantee that we will be able to solve problems encountered on other people's systems. </p>
+
+<h2>License</h2>
+
+<p><a href="http://opensource.org/licenses/MIT">MIT</a>.  This is free and open-source.  </p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/rjweiss">rjweiss</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
