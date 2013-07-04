@@ -24,6 +24,7 @@ public class CoreNlpTask extends Task {
 
     public CoreNlpTask(Article article) {
         this.article = article;
+        // Don't initialize the pipeline here!  Tasks are created on the server.  Let the worker initialize the task.
     }
 
     public Article getArticle() {
@@ -31,12 +32,15 @@ public class CoreNlpTask extends Task {
     }
 
     @Override
-    public void execute() {
-        // Don't start timing until after getting the pipeline.
-        // The first factory call for a given set of annotators is expensive.
-        CoreNlpPipeline pipeline = CoreNlpFactory.getPipeline("tokenize, ssplit, pos, lemma, ner, parse");
+    public void initialize() {
+        // The first factory call for a given set of annotators is expensive.  Get it here so that it is
+        // done once outside of the scope of the timing.  The factory will reuse this instance.
+        CoreNlpFactory.getPipeline("tokenize, ssplit, pos, lemma, ner, parse");
+    }
 
-        log(String.format("%s\t%s", "start", article.file));
+    @Override
+    public void execute() {
+        CoreNlpPipeline pipeline = CoreNlpFactory.getPipeline("tokenize, ssplit, pos, lemma, ner, parse");
 
         // Statistics counters.
         int totalTokens = 0;
@@ -44,7 +48,6 @@ public class CoreNlpTask extends Task {
         int maxTokensPerSentence = 0;
         double meanTokensPerSentence = 0;
 
-        long start = System.currentTimeMillis();
         try {
             Annotation document = pipeline.process(article.body);
 
@@ -104,10 +107,6 @@ public class CoreNlpTask extends Task {
             this.successful = true;
         }
         finally {
-            long stop = System.currentTimeMillis();
-            this.executionMillis = stop - start;
-            this.complete = true;
-            log(String.format("%s\t%s", "stop", article.file));
         }
     }
 

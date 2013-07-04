@@ -4,11 +4,8 @@ package edu.stanford.pcl.news.task;
 import edu.stanford.pcl.news.NewsProperties;
 
 import java.io.Serializable;
-import java.util.*;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.DelayQueue;
-import java.util.concurrent.Delayed;
-import java.util.concurrent.TimeUnit;
+import java.util.Iterator;
+import java.util.concurrent.*;
 
 // XXX  Shouldn't wrap the blocking queue like this.  Need to really handle the interruptions.
 public class TaskQueue implements Serializable {
@@ -38,13 +35,13 @@ public class TaskQueue implements Serializable {
 
 
     ArrayBlockingQueue<Task> primaryQueue;
-    Queue<Task> continuationQueue;
+    ConcurrentLinkedQueue<Task> continuationQueue;
     DelayQueue<DelayedTask> retryQueue;
 
     public TaskQueue() {
         //  XXX  Refine capacity (this caps the amount of workers in the pool (ha, no it doesn't)).
         this.primaryQueue = new ArrayBlockingQueue<Task>(Integer.parseInt(NewsProperties.getProperty("task.queue.size")));
-        this.continuationQueue = new LinkedList<Task>();
+        this.continuationQueue = new ConcurrentLinkedQueue<Task>();
         this.retryQueue = new DelayQueue<DelayedTask>();
     }
 
@@ -62,7 +59,14 @@ public class TaskQueue implements Serializable {
             if (task == null) {
                 task = primaryQueue.take();
             }
-            retryQueue.put(new DelayedTask(task));
+            if (task.getTryCount() < 3) {
+                // XXX
+                task.setTryCount(task.getTryCount() + 1);
+                retryQueue.put(new DelayedTask(task));
+            }
+            else {
+                System.out.printf("%d\t%d\t%s\t%s\n", System.currentTimeMillis(), Thread.currentThread().getId(), "rejected", task);
+            }
             return task;
         }
         catch (InterruptedException e) {
@@ -98,4 +102,7 @@ public class TaskQueue implements Serializable {
         continuationQueue.add(task);
     }
 
+    public String toString() {
+        return String.format("%d\t%d\t%d", primaryQueue.size(), continuationQueue.size(), retryQueue.size());
+    }
 }

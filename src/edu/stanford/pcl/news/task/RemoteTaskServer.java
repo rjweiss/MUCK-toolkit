@@ -5,6 +5,6 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface RemoteTaskServer extends Remote {
-    public Task takeTask() throws RemoteException;
+    public Task takeTask(String workerId) throws RemoteException;
     public void returnTask(Task task) throws RemoteException;
 }

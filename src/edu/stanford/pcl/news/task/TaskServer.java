@@ -8,6 +8,7 @@ import edu.stanford.pcl.news.NewsProperties;
 import edu.stanford.pcl.news.corenlp.CoreNlpTask;
 import edu.stanford.pcl.news.model.Serialization;
 import edu.stanford.pcl.news.model.db.DbConnection;
+import edu.stanford.pcl.news.model.entity.Article;
 import edu.stanford.pcl.news.parser.ParserTask;
 
 import java.io.File;
@@ -57,8 +58,9 @@ public class TaskServer implements RemoteTaskServer {
     }
 
     @Override
-    public Task takeTask() throws RemoteException {
+    public Task takeTask(String workerId) throws RemoteException {
         Task task = taskQueue.take();
+        task.setWorkerId(workerId); // XXX  Really, this is just for logging.
         log("dequeued", task);
         return task;
     }
@@ -67,8 +69,12 @@ public class TaskServer implements RemoteTaskServer {
     public void returnTask(Task task) throws RemoteException {
         log("returned", task);
 
+        if (task.timedOut) {
+            log("timedout", task);
+        }
+
         boolean resolved = taskQueue.resolve(task);
-        if (!resolved) return;
+        if (!resolved) return;  // XXX  Pretty sure this is going to prevent tasks from being completed on their last try.
 
         log("resolved", task);
 
@@ -76,7 +82,9 @@ public class TaskServer implements RemoteTaskServer {
         if (task instanceof ParserTask) {
             ParserTask t = (ParserTask)task;
             if (t.isSuccessful()) {
-                taskQueue.putContinuationTask(new CoreNlpTask(((ParserTask)task).getArticle()));
+                Task continuationTask = new CoreNlpTask(((ParserTask)task).getArticle());
+                taskQueue.putContinuationTask(continuationTask);
+                log("enqueued", continuationTask);
             }
         }
         else if (task instanceof CoreNlpTask) {
@@ -113,7 +121,11 @@ public class TaskServer implements RemoteTaskServer {
 
 
     private static void log(String operation, Task task) {
-        System.out.printf("%d\t%s\t%s\n", System.currentTimeMillis(), operation, task);
+        System.out.printf("%d\t%d\t%s\t%s\n", System.currentTimeMillis(), Thread.currentThread().getId(), operation, task);
+    }
+
+    private static void log(String operation, String message) {
+        System.out.printf("%d\t%d\t%s\t%s\n", System.currentTimeMillis(), Thread.currentThread().getId(), operation, message);
     }
 
     public static void main(String[] args) {
@@ -122,7 +134,8 @@ public class TaskServer implements RemoteTaskServer {
             server.start();
 
             // Print log column headers.
-            System.out.println("UNIXTIMESTAMP\tOPERATION\tTASKNAME\tVMID\tDONE\tSUCCESS\tMS\tFILE");
+            System.out.println("UNIXTIMESTAMP\tTID\tOPERATION\tTASKNAME\tTASKWORKERID\tDONE\tSUCCESS\tMS\tFILE");
+            System.err.println("UNIXTIMESTAMP\tTID\tOPER\tTASKWORKERID\tT\tC\tR");
 
 
             // For now, simply enqueue a task for each article.

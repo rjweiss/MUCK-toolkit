@@ -29,8 +29,6 @@ public class ParserTask extends Task {
 
     @Override
     public void execute() {
-        log(String.format("%s\t%s", "start", filePath));
-        long start = System.currentTimeMillis();
         try {
 
             // XXX  This is weak.  Should probably use some sort of signature.
@@ -63,10 +61,6 @@ public class ParserTask extends Task {
             }
         }
         finally {
-            long stop = System.currentTimeMillis();
-            this.executionMillis = stop - start;
-            this.complete = true;
-            log(String.format("%s\t%s", "stop", filePath));
         }
     }
 
