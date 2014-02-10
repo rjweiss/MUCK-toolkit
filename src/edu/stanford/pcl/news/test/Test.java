@@ -11,7 +11,7 @@ public class Test {
 //        TaskRunner runner = new LocalDirectoryToMongoCollectionTaskRunner("data/plain", "localhost", "news", "articles");
 //        runner.start();
 
-//        TaskRunner runner = new LocalDirectoryToSolrIndexTaskWorker("data/plain", "test");
+//        TaskRunner runner = new LocalDirectoryToSolrIndexTaskRunner("data/plain", "test");
 //        runner.start();
 
     }

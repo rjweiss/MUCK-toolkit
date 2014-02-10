@@ -23,7 +23,7 @@ import java.util.UUID;
 import java.util.concurrent.LinkedBlockingQueue;
 
 
-public class LocalDirectoryToSolrIndexTaskWorker extends TaskRunner {
+public class LocalDirectoryToSolrIndexTaskRunner extends TaskRunner {
 
     private static String readFile(File file) throws IOException {
         FileInputStream stream = new FileInputStream(file);
@@ -44,7 +44,7 @@ public class LocalDirectoryToSolrIndexTaskWorker extends TaskRunner {
     private SolrServer solr;
 
 
-    public LocalDirectoryToSolrIndexTaskWorker(String directory, String core) {
+    public LocalDirectoryToSolrIndexTaskRunner(String directory, String core) {
         paths = new LinkedBlockingQueue<Path>(1);
 
         fileVisitor = new SimpleFileVisitor<Path>() {
