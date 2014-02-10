@@ -1,20 +1,12 @@
 
 package edu.stanford.pcl.news.task;
 
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
-import edu.stanford.pcl.news.NewsProperties;
-import edu.stanford.pcl.news.corenlp.CoreNlpTask;
-import edu.stanford.pcl.news.model.Serialization;
-import edu.stanford.pcl.news.model.db.DbConnection;
-import edu.stanford.pcl.news.model.entity.Article;
 import edu.stanford.pcl.news.parser.ParserTask;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.UnknownHostException;
+import java.lang.reflect.Type;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
@@ -22,6 +14,10 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class TaskServer implements RemoteTaskServer {
@@ -42,14 +38,23 @@ public class TaskServer implements RemoteTaskServer {
 
 
     private TaskQueue taskQueue;
-    private DbConnection dbConnection;
+    private Map<Type, List<TaskResolver>> resolvers;
 
 
-    public TaskServer() throws UnknownHostException {
+    public TaskServer() {
         this.taskQueue = new TaskQueue();
-        this.dbConnection = new DbConnection("news");
+        this.resolvers = new HashMap<Type, List<TaskResolver>>();
     }
 
+
+    public void registerResolver(Type taskType, TaskResolver resolver) {
+        List<TaskResolver> resolverList = this.resolvers.get(taskType);
+        if (resolverList == null) {
+            resolverList = new ArrayList<TaskResolver>();
+            this.resolvers.put(taskType, resolverList);
+        }
+        resolverList.add(resolver);
+    }
 
     public void start() throws RemoteException {
         Registry registry = LocateRegistry.getRegistry();
@@ -76,25 +81,19 @@ public class TaskServer implements RemoteTaskServer {
         boolean resolved = taskQueue.resolve(task);
         if (!resolved) return;  // XXX  Pretty sure this is going to prevent tasks from being completed on their last try.
 
+        // XXX  Might want to let resolvers abort resolution.
         log("resolved", task);
 
-        // XXX  Shouldn't do this directly from the server.  Maybe defined in the task or some sort of workload object?
-        if (task instanceof ParserTask) {
-            ParserTask t = (ParserTask)task;
-            if (t.isSuccessful()) {
-                Task continuationTask = new CoreNlpTask(((ParserTask)task).getArticle());
-                taskQueue.putContinuationTask(continuationTask);
-                log("enqueued", continuationTask);
+        List<TaskResolver> resolverList = resolvers.get(task.getClass());
+        if (resolverList != null) {
+            for (TaskResolver resolver : resolverList) {
+                resolver.resolve(task);
             }
         }
-        else if (task instanceof CoreNlpTask) {
-            CoreNlpTask t = (CoreNlpTask)task;
-            if (t.isSuccessful()) {
-                // XXX  Not sure if this should really happen here, but...
-                DBCollection articles = dbConnection.getCollection("articles");
-                articles.save((DBObject)JSON.parse(Serialization.toJson(t.getArticle())));
-            }
-        }
+    }
+
+    public TaskQueue getTaskQueue() {
+        return taskQueue;
     }
 
 
@@ -139,7 +138,7 @@ public class TaskServer implements RemoteTaskServer {
 
 
             // For now, simply enqueue a task for each article.
-            File dataRootDirectory = new File(NewsProperties.getProperty("data.root.path"));
+            File dataRootDirectory = new File("/news/data");
             if (dataRootDirectory.exists()) {
                 server.traverse(dataRootDirectory);
             }

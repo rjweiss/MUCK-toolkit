@@ -5,7 +5,7 @@ import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.AnnotationPipeline;
 import edu.stanford.nlp.pipeline.Annotator;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
-import edu.stanford.nlp.util.MutableInteger;
+import edu.stanford.nlp.util.MutableLong;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -54,7 +54,7 @@ public class CoreNlpPipeline {
             @SuppressWarnings("unchecked")
             List<Annotator> annotators = (List<Annotator>)annotatorsField.get(pipeline);
             @SuppressWarnings("unchecked")
-            List<MutableInteger> accumulatedTime = (List<MutableInteger>)accumulatedTimeField.get(pipeline);
+            List<MutableLong> accumulatedTime = (List<MutableLong>)accumulatedTimeField.get(pipeline);
 
             for (int i=0; i<annotators.size(); i++) {
                 Annotator annotator = annotators.get(i);

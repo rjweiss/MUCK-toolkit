@@ -5,16 +5,17 @@ import edu.stanford.pcl.news.model.Serialization;
 import org.bson.types.ObjectId;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Set;
 
 public class Article implements Serializable {
-    private static final long serialVersionUID = -6060628666990358845L;
+    private static final long serialVersionUID = 5139318906731251221L;
 
     private ObjectId _id;
 
     public String file;
     public String outlet;
-    public String date; // XXX  String?
+    public Date date;
     public String page;
     public String headline;
     public String body;

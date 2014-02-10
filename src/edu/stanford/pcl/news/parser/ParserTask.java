@@ -6,17 +6,17 @@ import edu.stanford.pcl.news.task.Task;
 
 
 public class ParserTask extends Task {
-    private static final long serialVersionUID = -7395120686484734721L;
+    private static final long serialVersionUID = -8416082213031535994L;
 
 
     private String filePath;
-    private String xml;
+    private String content;
     private Article article;
 
 
-    public ParserTask(String filePath, String xml) {
+    public ParserTask(String filePath, String content) {
         this.filePath = filePath;
-        this.xml = xml;
+        this.content = content;
     }
 
     public String getFilePath() {
@@ -46,18 +46,16 @@ public class ParserTask extends Task {
                 outlet = ParserFactory.Outlet.BALTIMORE_SUN;
             }
 
-            if (outlet != null) {
-                try {
-                    Parser parser = ParserFactory.getParser(outlet);
-                    this.article = parser.parse(this.filePath, this.xml);
-                    if (this.article != null) {
-                        this.successful = true;
-                    }
+            try {
+                Parser parser = ParserFactory.getParser(outlet);
+                this.article = parser.parse(this.filePath, this.content);
+                if (this.article != null) {
+                    this.successful = true;
                 }
-                catch (ParseException e) {
-                    // XXX  Do something...?
-                    e.printStackTrace();
-                }
+            }
+            catch (ParseException e) {
+                // XXX  Do something...?
+                e.printStackTrace();
             }
         }
         finally {

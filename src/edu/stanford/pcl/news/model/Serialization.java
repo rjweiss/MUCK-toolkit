@@ -59,6 +59,17 @@ public class Serialization {
 
     private static Gson gson = new GsonBuilder()
             .setPrettyPrinting()
+            .registerTypeAdapter(Date.class, new JsonSerializer<Date>() {
+                @Override
+                public JsonElement serialize(Date src, Type typeOfSrc, JsonSerializationContext context) {
+                    if (src == null) return null;
+                    return new JsonPrimitive(format.format(src));
+                }
+            })
+            .create();
+
+    private static Gson gsonMongo = new GsonBuilder()
+            .setPrettyPrinting()
             .registerTypeAdapter(ObjectId.class, new ObjectIdDeserializer())
             .registerTypeAdapter(ObjectId.class, new ObjectIdSerializer())
             .registerTypeAdapter(Date.class, new DateDeserializer())
@@ -67,11 +78,15 @@ public class Serialization {
 
 
     public static <T> T toJavaObject(String json, Class<T> classOfT) throws JsonSyntaxException {
-        return gson.fromJson(json, classOfT);
+        return gsonMongo.fromJson(json, classOfT);
     }
 
     public static <T> String toJson(T object) throws JsonSyntaxException {
         return gson.toJson(object);
+    }
+
+    public static <T> String toMongoJson(T object) throws JsonSyntaxException {
+        return gsonMongo.toJson(object);
     }
 
 

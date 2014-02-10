@@ -30,7 +30,7 @@ public class TaskWorker extends Thread {
     }
 
     public void register(String host) throws RemoteException {
-        this.registry = LocateRegistry.getRegistry(host);
+        this.registry = LocateRegistry.getRegistry(host, Integer.parseInt(NewsProperties.getProperty("rmi.registry.port")));
     }
 
     public void run() {

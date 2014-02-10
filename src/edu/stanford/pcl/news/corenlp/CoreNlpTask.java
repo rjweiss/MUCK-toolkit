@@ -3,13 +3,17 @@ package edu.stanford.pcl.news.corenlp;
 
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.ling.Label;
+import edu.stanford.nlp.neural.rnn.RNNCoreAnnotations;
 import edu.stanford.nlp.pipeline.Annotation;
-import edu.stanford.nlp.trees.semgraph.SemanticGraph;
-import edu.stanford.nlp.trees.semgraph.SemanticGraphCoreAnnotations;
+import edu.stanford.nlp.semgraph.SemanticGraph;
+import edu.stanford.nlp.semgraph.SemanticGraphCoreAnnotations;
+import edu.stanford.nlp.sentiment.SentimentCoreAnnotations;
 import edu.stanford.nlp.util.CoreMap;
 import edu.stanford.pcl.news.NewsProperties;
 import edu.stanford.pcl.news.model.entity.*;
 import edu.stanford.pcl.news.task.Task;
+import org.ejml.simple.SimpleMatrix;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 public class CoreNlpTask extends Task {
-    private static final long serialVersionUID = 1828040719302562749L;
+    private static final long serialVersionUID = 8128611873587355604L;
 
 
     private Article article;
@@ -35,12 +39,12 @@ public class CoreNlpTask extends Task {
     public void initialize() {
         // The first factory call for a given set of annotators is expensive.  Get it here so that it is
         // done once outside of the scope of the timing.  The factory will reuse this instance.
-        CoreNlpFactory.getPipeline("tokenize, ssplit, pos, lemma, ner, parse");
+        CoreNlpFactory.getPipeline("tokenize, ssplit, pos, lemma, ner, parse, sentiment");
     }
 
     @Override
     public void execute() {
-        CoreNlpPipeline pipeline = CoreNlpFactory.getPipeline("tokenize, ssplit, pos, lemma, ner, parse");
+        CoreNlpPipeline pipeline = CoreNlpFactory.getPipeline("tokenize, ssplit, pos, lemma, ner, parse, sentiment");
 
         // Statistics counters.
         int totalTokens = 0;
@@ -75,6 +79,31 @@ public class CoreNlpTask extends Task {
                     SemanticGraph dependencies = sentence.get(SemanticGraphCoreAnnotations.CollapsedCCProcessedDependenciesAnnotation.class);
                     s.dependencies = new ArrayList<String>();
                     Collections.addAll(s.dependencies, dependencies.toPOSList().split("\n"));
+                }
+
+                // Sentiment
+                s.sentiments = new ArrayList<Sentiment>();
+
+                // XXX  For now, there is just one sentiment annotation.
+                {
+                    Sentiment sentiment = new Sentiment();
+                    sentiment.model = "corenlp.default";
+                    sentiment.prediction = sentence.get(SentimentCoreAnnotations.ClassName.class);
+
+                    // XXX  Hard code this for now.  This comes from StanfordCoreNLP.annotators[SentimentAnnotator].model.op.classNames.
+                    String[] classes = new String[] { "Very negative", "Negative", "Neutral", "Positive", "Very positive" };
+
+                    sentiment.predictions = new Predictions();
+                    Label label = sentence.get(SentimentCoreAnnotations.AnnotatedTree.class).label();
+                    if (label instanceof CoreLabel) {
+                        CoreLabel cl = (CoreLabel)label;
+                        SimpleMatrix matrix = cl.get(RNNCoreAnnotations.Predictions.class);
+                        for (int i=0; i<matrix.numRows(); i++) {
+                            sentiment.predictions.put(classes[i], matrix.get(i, 0));
+                        }
+                    }
+
+                    s.sentiments.add(sentiment);
                 }
 
                 // Store the sentence.

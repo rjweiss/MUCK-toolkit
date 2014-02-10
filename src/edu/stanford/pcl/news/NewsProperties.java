@@ -9,12 +9,13 @@ import java.util.Properties;
 public class NewsProperties {
     private static Properties defaults = new Properties();
     static {
-        defaults.setProperty("model.db.host", "localhost");
-        defaults.setProperty("data.root.path", "/news/data");
-        defaults.setProperty("task.queue.size", "4");           // XXX  Probably remove.
+        defaults.setProperty("task.queue.size", "1");           // XXX  Probably remove.
         defaults.setProperty("task.retry.seconds", "400");
         defaults.setProperty("task.abort.seconds", "300");
         defaults.setProperty("corenlp.parse.maxlen", "150");
+        defaults.setProperty("rmi.registry.hostname", "localhost");
+        defaults.setProperty("rmi.registry.port", "1099");
+        defaults.setProperty("rmi.server.port", "12345");
     }
 
     private static NewsProperties singleton = new NewsProperties();

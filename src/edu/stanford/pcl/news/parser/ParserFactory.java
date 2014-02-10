@@ -32,7 +32,7 @@ public class ParserFactory {
             descriptorExpressions.add("//head/docdata/identified-content/classifier");
             Map<String, String> excludeConditionsMap = new HashMap<String, String>();
             excludeConditionsMap.put("//head/docdata/identified-content/classifier[@type=\"descriptor\"]", "Deaths (Obituaries)");
-            return new XmlParser(outlet.name, featureExpressionMap, excludeConditionsMap, descriptorExpressions);
+            return new XmlParser(outlet.name, featureExpressionMap, excludeConditionsMap, descriptorExpressions, "yyyyMMdd'T000000'");
         }
         else if (outlet == Outlet.LOS_ANGELES_TIMES || outlet == Outlet.CHICAGO_TRIBUNE || outlet == Outlet.BALTIMORE_SUN) {
             Map<String, String> featureExpressionMap = new HashMap<String, String>();
@@ -42,10 +42,11 @@ public class ParserFactory {
             featureExpressionMap.put("body", "//txtdt/text/paragraph");
             Map<String, String> excludeConditionsMap = new HashMap<String, String>();
             excludeConditionsMap.put("//docsec", "OBITUARIES");
-            return new XmlParser(outlet.name, featureExpressionMap, excludeConditionsMap);
+            return new XmlParser(outlet.name, featureExpressionMap, excludeConditionsMap, "yyyyMMdd");
         }
         else {
-            return null;
+            // XXX  Not sure this is a good default.
+            return new PlainTextParser();
         }
     }
 

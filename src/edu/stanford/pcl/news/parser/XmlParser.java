@@ -17,6 +17,9 @@ import javax.xml.xpath.XPathFactory;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +34,7 @@ class XmlParser extends Parser {
     private Map<String, String> featureExpressionMap;
     private List<String> descriptorExpressions;
     private Map<String, String> excludeConditionsMap;
+    private DateFormat dateFormat;
     private String outlet;
 
     private XmlParser() {
@@ -55,28 +59,39 @@ class XmlParser extends Parser {
     }
 
     XmlParser(String outlet, Map<String, String> featureExpressionMap) {
-        this(outlet, featureExpressionMap, null, null);
+        this(outlet, featureExpressionMap, null, null, null);
     }
 
     XmlParser(String outlet, Map<String, String> featureExpressionMap, Map<String, String> excludeConditionsMap) {
-        this(outlet, featureExpressionMap, excludeConditionsMap, null);
+        this(outlet, featureExpressionMap, excludeConditionsMap, null, null);
+    }
+
+    XmlParser(String outlet, Map<String, String> featureExpressionMap, Map<String, String> excludeConditionsMap, String dateFormatString) {
+        this(outlet, featureExpressionMap, excludeConditionsMap, null, dateFormatString);
     }
 
     XmlParser(String outlet, Map<String, String> featureExpressionMap, Map<String, String> excludeConditionsMap, List<String> descriptorExpressions) {
+        this(outlet, featureExpressionMap, excludeConditionsMap, descriptorExpressions, null);
+    }
+
+    XmlParser(String outlet, Map<String, String> featureExpressionMap, Map<String, String> excludeConditionsMap, List<String> descriptorExpressions, String dateFormatString) {
         this();
         this.outlet = outlet;
         this.featureExpressionMap = featureExpressionMap;
         this.excludeConditionsMap = excludeConditionsMap;
         this.descriptorExpressions = descriptorExpressions;
+        if (dateFormatString != null) {
+            this.dateFormat = new SimpleDateFormat(dateFormatString);
+        }
     }
 
 
     @Override
-    public Article parse(String filePath, String xml) throws ParseException {
+    public Article parse(String filePath, String content) throws ParseException {
         Article article = new Article();
 
         try {
-            InputStream in = new ByteArrayInputStream(xml.getBytes("UTF-8"));
+            InputStream in = new ByteArrayInputStream(content.getBytes("UTF-8"));
             Document document = documentBuilder.parse(in);
 
             if (excludeConditionsMap != null) {
@@ -106,8 +121,19 @@ class XmlParser extends Parser {
                         for (int i = 0; i < nodes.getLength(); i++) {
                             builder.append(nodes.item(i).getTextContent());
                         }
-                        // XXX  Only works for strings!
-                        field.set(article, builder.toString());
+
+                        if (field.getType().equals(String.class)) {
+                            field.set(article, builder.toString());
+                        }
+                        else if (field.getType().equals(Date.class)) {
+                            try {
+                                field.set(article, dateFormat.parse(builder.toString()));
+                            }
+                            catch (Exception e) {
+                                // Leave field null.
+                            }
+                        }
+                        // XXX  Handle other types!
                     }
                 }
             }
