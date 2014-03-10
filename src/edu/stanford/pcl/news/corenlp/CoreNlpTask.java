@@ -3,7 +3,6 @@ package edu.stanford.pcl.news.corenlp;
 
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.ling.CoreLabel;
-import edu.stanford.nlp.ling.IndexedWord;
 import edu.stanford.nlp.ling.Label;
 import edu.stanford.nlp.neural.rnn.RNNCoreAnnotations;
 import edu.stanford.nlp.pipeline.Annotation;
@@ -11,14 +10,15 @@ import edu.stanford.nlp.semgraph.SemanticGraph;
 import edu.stanford.nlp.semgraph.SemanticGraphCoreAnnotations;
 import edu.stanford.nlp.semgraph.SemanticGraphEdge;
 import edu.stanford.nlp.sentiment.SentimentCoreAnnotations;
-import edu.stanford.nlp.trees.GrammaticalRelation;
 import edu.stanford.nlp.util.CoreMap;
 import edu.stanford.pcl.news.NewsProperties;
 import edu.stanford.pcl.news.model.entity.*;
 import edu.stanford.pcl.news.task.Task;
 import org.ejml.simple.SimpleMatrix;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class CoreNlpTask extends Task {
     private static final long serialVersionUID = 8128611873587355604L;
@@ -75,24 +75,30 @@ public class CoreNlpTask extends Task {
                 }
 
                 // Store dependencies.  Don't bother if the token length is greater than the parser's token limit.
-
                 if (s.tokens.size() <= Integer.parseInt(NewsProperties.getProperty("corenlp.parse.maxlen"))) {
                     SemanticGraph dependencies = sentence.get(SemanticGraphCoreAnnotations.CollapsedCCProcessedDependenciesAnnotation.class);
+
                     s.dependencies = new ArrayList<Dependency>();
-                    for (SemanticGraphEdge edge : dependencies.getEdgeSet())
-                    {
+                    for (SemanticGraphEdge edge : dependencies.getEdgeSet()) {
                         Dependency d = new Dependency();
+<<<<<<< HEAD
                         d.gov = new Relation();
                         d.dep = new Relation();
 
+=======
+>>>>>>> 24c2e67b4a4088ce08c4f6638c02cbb02e975d61
                         d.rel = edge.getRelation().toString();
+                        d.gov = new Relation();
                         d.gov.word = edge.getGovernor().word();
                         d.gov.index = edge.getGovernor().index();
+                        d.dep = new Relation();
                         d.dep.word = edge.getDependent().word();
                         d.dep.index = edge.getDependent().index();
-
                         s.dependencies.add(d);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 24c2e67b4a4088ce08c4f6638c02cbb02e975d61
                     }
                 }
 
@@ -149,9 +155,6 @@ public class CoreNlpTask extends Task {
             article.corenlp.statistics.put("time:total", totalTime);
 
             this.successful = true;
-        }
-        catch (Throwable t) {
-            t.printStackTrace();
         }
         finally {
         }
