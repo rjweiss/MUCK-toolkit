@@ -19,6 +19,7 @@ public class Sentence implements Serializable {
     public HashSet<String> objects;
     public String sentiment;
     public String indextext;
+    public String text;
 
 
 
