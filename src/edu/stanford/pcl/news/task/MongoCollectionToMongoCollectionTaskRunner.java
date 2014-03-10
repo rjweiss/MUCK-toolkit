@@ -63,11 +63,7 @@ public class MongoCollectionToMongoCollectionTaskRunner extends TaskRunner {
                 return null;
             }
 
-            Article a = new Article();
-            a.file = doc.get("stories_id").toString(); // XXX This changes the Mongo field name too!  Originally labeled "url".
-            a.body = doc.get("body").toString(); // XXX This changes the Mongo field name too! Originally labeled "cleaned_text".
-            a._id = (ObjectId) doc.get("_id");
-
+            Article a = Serialization.toJavaObject(doc.toString(), Article.class);
             return new CoreNlpTask(a);
         }
         catch (MongoException e) {

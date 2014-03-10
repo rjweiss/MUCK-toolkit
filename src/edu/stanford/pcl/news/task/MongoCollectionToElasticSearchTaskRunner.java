@@ -1,9 +1,8 @@
 package edu.stanford.pcl.news.task;
 
 import com.mongodb.*;
-import edu.stanford.pcl.news.elasticsearch.ElasticsearchIndexingTask;
 import edu.stanford.pcl.news.model.Serialization;
-import edu.stanford.pcl.news.transformation.SchemaTransformationTask;
+import edu.stanford.pcl.news.indexer.ElasticsearchTransformAndIndexTask;
 import edu.stanford.pcl.news.model.entity.Article;
 
 import java.io.FileNotFoundException;
@@ -14,8 +13,6 @@ public class MongoCollectionToElasticSearchTaskRunner extends TaskRunner {
     private MongoClient mongodb;
     private DB db;
     private DBCollection collection;
-
-//    private Client client;
 
     public MongoCollectionToElasticSearchTaskRunner(String mongohost, String mongodb, String collection)
             throws FileNotFoundException {
@@ -32,34 +29,14 @@ public class MongoCollectionToElasticSearchTaskRunner extends TaskRunner {
             e.printStackTrace();
         }
 
-//        // Try to connect to a single local elasticsearch node.
-//        try {
-//            this.client = new TransportClient()
-//                    .addTransportAddress(new InetSocketTransportAddress(elasticsearchhost, 9300));
-//        } catch (ElasticsearchException e) {
-//            e.printStackTrace();
-//        }
-
-        // Perform conversion from mongodb collection schema to elasticsearch search schema.
-        // Index updated document.
-
-//        registerResolver(SchemaTransformationTask.class, new TaskResolver<SchemaTransformationTask>() {
-//            @Override
-//            public void resolve(SchemaTransformationTask task) {
-//                if (task.isSuccessful()) {
-//                    server.getTaskQueue().putContinuationTask(new ElasticsearchIndexingTask(task.getArticle()));
-//                }
-//            }
-//        });
-            registerResolver(SchemaTransformationTask.class, new TaskResolver<SchemaTransformationTask>() {
+            registerResolver(ElasticsearchTransformAndIndexTask.class, new TaskResolver<ElasticsearchTransformAndIndexTask>() {
             @Override
-            public void resolve(SchemaTransformationTask task) {
-                if (task.isSuccessful()) {
-                    System.out.println("Inserted.");
-                }
+            public void resolve(ElasticsearchTransformAndIndexTask task) {
+//                if (task.isSuccessful()) {
+//                    System.out.println("Inserted.");
+//                }
             }
         });
-
     }
 
     @Override
@@ -76,7 +53,7 @@ public class MongoCollectionToElasticSearchTaskRunner extends TaskRunner {
                 return null;
             }
             Article a = Serialization.toJavaObject(doc.toString(), Article.class);
-            return new SchemaTransformationTask(a);
+            return new ElasticsearchTransformAndIndexTask(a);
 
         }
         catch (Exception e) { // XXX Probably several errors to catch.

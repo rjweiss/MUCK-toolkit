@@ -1,6 +1,7 @@
 
 package edu.stanford.pcl.news.task;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -45,7 +46,7 @@ public abstract class Task implements Callable<Void>, Serializable {
         this.retryCount = retryCount;
     }
 
-    public void initialize() {
+    public void initialize() throws IOException {
     }
 
     @Override
