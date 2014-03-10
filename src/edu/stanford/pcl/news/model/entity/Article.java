@@ -5,13 +5,14 @@ import edu.stanford.pcl.news.model.Serialization;
 import org.bson.types.ObjectId;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Set;
 
 public class Article implements Serializable {
     private static final long serialVersionUID = 5139318906731251221L;
 
-    private ObjectId _id;
+    public ObjectId _id;
 
     public String file;
     public String outlet;
@@ -21,6 +22,10 @@ public class Article implements Serializable {
     public String body;
     public Set<Descriptor> descriptors;
     public CoreNlp corenlp;
+    public String indextext;
+    public String persons;
+    public String organizations;
+    public String locations;
 
     @Override
     public boolean equals(Object obj) {

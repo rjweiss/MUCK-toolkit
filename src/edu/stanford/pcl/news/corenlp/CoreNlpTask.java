@@ -84,8 +84,6 @@ public class CoreNlpTask extends Task {
                         Dependency d = new Dependency();
                         d.gov = new Relation();
                         d.dep = new Relation();
-                        //d.gov.put(edge.getGovernor().word(), edge.getGovernor().index());
-                        //d.dep.put(edge.getDependent().word(), edge.getDependent().index());
 
                         d.rel = edge.getRelation().toString();
                         d.gov.word = edge.getGovernor().word();
@@ -95,22 +93,7 @@ public class CoreNlpTask extends Task {
 
                         s.dependencies.add(d);
 
-/*
-                        j++;
-                        System.out.println("------EDGE DEPENDENCY: "+j);
-                        IndexedWord dep = edge.getDependent();
-                        String dependent = dep.word();
-                        int dependent_index = dep.index();
-                        IndexedWord gov = edge.getGovernor();
-                        String governor = gov.word();
-                        int governor_index = gov.index();
-                        GrammaticalRelation relation = edge.getRelation();
-                        System.out.println("No:" + j + " Relation: " + relation.toString() + " Dependent ID: " + dependent_index + " Dependent: " + dependent + " Governor ID: " + governor_index + " Governor: " + governor);
-*/
-
-                    }//end of for
-                    //Collections.addAll(s.dependencies, dependencies.toPOSList().split("\n"));
-
+                    }
                 }
 
                 // Sentiment
