@@ -1,0 +1,27 @@
+<html>
+<head>
+    <script src="jquery-1.11.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $.ajax({
+                url: "api/annotator",
+                type: "POST",
+                contentType: "application/json; charset=UTF-8",
+                dataType: "json",
+                data: JSON.stringify({ text: "This is a test of the new web service." }),
+                //data: '{ text: "This is a test of the new web service." }',
+                //data: '{ text: "This is a test of the new web service. }',
+                //data: '{ oops: "This is a test of the new web service." }',
+                //data: '{}',
+                //data: '',
+                success: function(data) {
+                    console.log(data);
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    TEST
+</body>
+</html>
