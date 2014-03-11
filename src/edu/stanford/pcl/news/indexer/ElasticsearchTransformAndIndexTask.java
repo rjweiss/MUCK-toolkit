@@ -269,6 +269,9 @@ public class ElasticsearchTransformAndIndexTask extends Task {
             article.persons = persons;
         } else {
             HashSet<String> currentPersons = article.persons;
+            if (currentPersons == null) {
+                currentPersons = new HashSet<String>();
+            }
             currentPersons.addAll(persons);
             article.persons = currentPersons;
         }
@@ -277,6 +280,9 @@ public class ElasticsearchTransformAndIndexTask extends Task {
             article.organizations = organizations;
         } else {
             HashSet<String> currentOrganizations = article.organizations;
+            if (currentOrganizations == null) {
+                currentOrganizations = new HashSet<String>();
+            }
             currentOrganizations.addAll(organizations);
             article.organizations = currentOrganizations;
         }
@@ -285,6 +291,9 @@ public class ElasticsearchTransformAndIndexTask extends Task {
             article.locations = locations;
         } else {
             HashSet<String> currentLocations = article.locations;
+            if (currentLocations == null) {
+                currentLocations = new HashSet<String>();
+            }
             currentLocations.addAll(locations);
             article.locations = currentLocations;
         }
@@ -293,6 +302,9 @@ public class ElasticsearchTransformAndIndexTask extends Task {
             article.subjects = subjects;
         } else {
             HashSet<String> currentSubjects = article.subjects;
+            if (currentSubjects == null) {
+                currentSubjects = new HashSet<String>();
+            }
             currentSubjects.addAll(subjects);
             article.subjects = currentSubjects;
         }
@@ -301,6 +313,9 @@ public class ElasticsearchTransformAndIndexTask extends Task {
             article.objects = objects;
         } else {
             HashSet<String> currentObjects = article.objects;
+            if (currentObjects == null) {
+                currentObjects = new HashSet<String>();
+            }
             currentObjects.addAll(objects);
             article.objects = currentObjects;
         }
