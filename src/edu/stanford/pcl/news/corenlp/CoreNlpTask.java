@@ -1,4 +1,3 @@
-
 package edu.stanford.pcl.news.corenlp;
 
 import edu.stanford.nlp.ling.CoreAnnotations;
@@ -81,12 +80,8 @@ public class CoreNlpTask extends Task {
                     s.dependencies = new ArrayList<Dependency>();
                     for (SemanticGraphEdge edge : dependencies.getEdgeSet()) {
                         Dependency d = new Dependency();
-<<<<<<< HEAD
                         d.gov = new Relation();
                         d.dep = new Relation();
-
-=======
->>>>>>> 24c2e67b4a4088ce08c4f6638c02cbb02e975d61
                         d.rel = edge.getRelation().toString();
                         d.gov = new Relation();
                         d.gov.word = edge.getGovernor().word();
@@ -95,10 +90,6 @@ public class CoreNlpTask extends Task {
                         d.dep.word = edge.getDependent().word();
                         d.dep.index = edge.getDependent().index();
                         s.dependencies.add(d);
-<<<<<<< HEAD
-
-=======
->>>>>>> 24c2e67b4a4088ce08c4f6638c02cbb02e975d61
                     }
                 }
 
