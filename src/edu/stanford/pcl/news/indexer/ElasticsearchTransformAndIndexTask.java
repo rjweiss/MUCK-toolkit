@@ -309,7 +309,7 @@ public class ElasticsearchTransformAndIndexTask extends Task {
             article.subjects = currentSubjects;
         }
 
-        if (!subjects.isEmpty()) {
+        if (!objects.isEmpty()) {
             article.objects = objects;
         } else {
             HashSet<String> currentObjects = article.objects;
