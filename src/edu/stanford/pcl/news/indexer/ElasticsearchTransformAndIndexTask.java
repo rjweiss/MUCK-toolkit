@@ -1,6 +1,7 @@
 package edu.stanford.pcl.news.indexer;
 
 import edu.stanford.pcl.news.model.entity.Article;
+import edu.stanford.pcl.news.model.entity.Dependency;
 import edu.stanford.pcl.news.model.entity.Sentence;
 import edu.stanford.pcl.news.model.entity.Token;
 import edu.stanford.pcl.news.task.Task;
@@ -30,103 +31,99 @@ public class ElasticsearchTransformAndIndexTask extends Task {
         this.article = article;
     }
 
-    public IndexResponse indexArticle(Article a) throws IOException {
-
-        XContentBuilder sourceBuilder = XContentFactory.jsonBuilder().startObject()
-                .field("persons", a.persons)
-                .field("organizations", a.organizations)
-                .field("date", a.date)
-                .field("locations", a.locations)
-                .array("indextext", a.indextext);
-        IndexRequest request = new IndexRequest(indexName, "article").id(String.valueOf(a._id)).source(sourceBuilder);
-
-        return client.index(request).actionGet();
-    }
-
-    public IndexResponse indexSentence(Sentence s, Article a) throws IOException {
-        XContentBuilder sourceBuilder = XContentFactory.jsonBuilder().startObject()
-                .field("persons", s.persons)
-                .field("organizations", s.organizations)
-                .field("date", a.date)
-                .field("locations", s.locations)
-                .field("parent_id", a._id)
-                .array("indextext", s.indextext);
-        IndexRequest request = new IndexRequest(indexName, "sentence").source(sourceBuilder);
-
-        return client.index(request).actionGet();
-
-    }
-
     @Override
     public void initialize() throws IOException {
         try {
             this.client = new TransportClient()
                     .addTransportAddress(new InetSocketTransportAddress("127.0.0.1", 9300));
         } catch (ElasticsearchException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
 
         this.client.admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet();
         ClusterStateResponse response = this.client.admin().cluster().prepareState().execute().actionGet();
         boolean hasIndex = response.getState().metaData().hasIndex(this.indexName);
 
-        if (!hasIndex) {
-            this.client.admin().indices().create(createIndexRequest(this.indexName)).actionGet();
-
-            // Sentence mapping.
-            XContentBuilder sentenceBuilder = XContentFactory.jsonBuilder().
-                    startObject().
-                    startObject("sentence").
-                    startObject("properties").
-                    startObject("persons").
-                    field("type", "string").field("store", "yes").field("index", "not_analyzed").
-                    endObject().
-                    startObject("organizations").
-                    field("type", "string").field("store", "yes").field("index", "not_analyzed").
-                    endObject().
-                    startObject("locations").
-                    field("type", "string").field("store", "yes").field("index", "not_analyzed").
-                    endObject().
-                    startObject("indextext").
-                    field("type", "string").field("store", "yes").field("index", "analyzed").
-                    endObject().
-                    startObject("date").
-                    field("type", "string").field("store", "yes").field("analyzer", "english").
-                    endObject().
-                    startObject("parent_id").
-                    field("type", "string").field("store", "yes").field("analyzer", "english").
-                    endObject().
-                    endObject().
-                    endObject().
-                    endObject();
-            client.admin().indices().preparePutMapping(indexName).setType("sentence").setSource(sentenceBuilder).execute().actionGet();
-
-            // Article mapping.
-            XContentBuilder articleBuilder = XContentFactory.jsonBuilder().
-                    startObject().
-                    startObject("article").
-                    startObject("properties").
-                    startObject("persons").
-                    field("type", "string").field("store", "yes").field("index", "not_analyzed").
-                    endObject().
-                    startObject("organizations").
-                    field("type", "string").field("store", "yes").field("index", "not_analyzed").
-                    endObject().
-                    startObject("locations").
-                    field("type", "string").field("store", "yes").field("index", "not_analyzed").
-                    endObject().
-                    startObject("indextext").
-                    field("type", "string").field("store", "yes").field("index", "analyzed").
-                    endObject().
-                    startObject("date").
-                    field("type", "string").field("store", "yes").field("analyzer", "english").
-                    endObject().
-                    endObject().
-                    endObject().
-                    endObject();
-            client.admin().indices().preparePutMapping(indexName).setType("article").setSource(articleBuilder).execute().actionGet();
+        if (hasIndex) {
+            return;
         }
-        // XXX Need fields for subjects and objects.
+
+        this.client.admin().indices().create(createIndexRequest(this.indexName)).actionGet();
+
+        // Sentence mapping.
+        XContentBuilder sentenceBuilder = XContentFactory.jsonBuilder().
+                startObject().
+                startObject("sentence").
+                startObject("properties").
+                startObject("persons").
+                field("type", "string").field("store", "yes").field("index", "not_analyzed").
+                endObject().
+                startObject("organizations").
+                field("type", "string").field("store", "yes").field("index", "not_analyzed").
+                endObject().
+                startObject("locations").
+                field("type", "string").field("store", "yes").field("index", "not_analyzed").
+                endObject().
+                startObject("subjects").
+                field("type", "string").field("store", "yes").field("index", "analyzed").
+                endObject().
+                startObject("objects").
+                field("type", "string").field("store", "yes").field("index", "analyzed").
+                endObject().
+                startObject("sentiment").
+                field("type", "string").field("store", "yes").field("index", "not_analyzed").
+                endObject().
+                startObject("indextext").
+                field("type", "string").field("store", "yes").field("index", "analyzed").
+                endObject().
+                startObject("text").
+                field("type", "string").field("store", "yes").field("index", "analyzed").
+                endObject().
+                startObject("date").
+                field("type", "date").field("store", "yes").
+                endObject().
+                startObject("parent_id").
+                field("type", "string").field("store", "yes").
+                startObject("media_id").
+                field("type", "integer").field("store", "yes").
+                endObject().
+                endObject().
+                endObject().
+                endObject();
+        client.admin().indices().preparePutMapping(indexName).setType("sentence").setSource(sentenceBuilder).execute().actionGet();
+
+        // Article mapping.
+        XContentBuilder articleBuilder = XContentFactory.jsonBuilder().
+                startObject().
+                startObject("article").
+                startObject("properties").
+                startObject("persons").
+                field("type", "string").field("store", "yes").field("index", "not_analyzed").
+                endObject().
+                startObject("organizations").
+                field("type", "string").field("store", "yes").field("index", "not_analyzed").
+                endObject().
+                startObject("locations").
+                field("type", "string").field("store", "yes").field("index", "not_analyzed").
+                endObject().
+                startObject("subjects").
+                field("type", "string").field("store", "yes").field("index", "analyzed").
+                endObject().
+                startObject("objects").
+                field("type", "string").field("store", "yes").field("index", "analyzed").
+                endObject().
+                startObject("indextext").
+                field("type", "string").field("store", "yes").field("index", "analyzed").
+                endObject().
+                startObject("date").
+                field("type", "date").field("store", "yes").
+                startObject("media_id").
+                field("type", "integer").field("store", "yes").
+                endObject().
+                endObject().
+                endObject().
+                endObject();
+        client.admin().indices().preparePutMapping(indexName).setType("article").setSource(articleBuilder).execute().actionGet();
     }
 
     @Override
@@ -143,8 +140,8 @@ public class ElasticsearchTransformAndIndexTask extends Task {
         HashSet<String> persons = new HashSet<String>();
         HashSet<String> organizations = new HashSet<String>();
         HashSet<String> locations = new HashSet<String>();
-
-        // XXX Need to add nsub and dobj/obj to each sentence and to docs.
+        HashSet<String> subjects = new HashSet<String>();
+        HashSet<String> objects = new HashSet<String>();
 
         Iterator<Sentence> sentenceIterator = null;
         try {
@@ -159,19 +156,23 @@ public class ElasticsearchTransformAndIndexTask extends Task {
                 sentence.persons = new HashSet<String>();
                 sentence.organizations = new HashSet<String>();
                 sentence.locations = new HashSet<String>();
+                sentence.text = "";
+
+                StringBuilder sentencesb = new StringBuilder();
 
                 Iterator<Token> tokenIterator = sentence.tokens.iterator();
 
                 StringBuilder currentPerson = new StringBuilder();
                 StringBuilder currentOrganization = new StringBuilder();
                 StringBuilder currentLocation = new StringBuilder();
-                StringBuilder indexSb = new StringBuilder();
+                ArrayList<String> sentencetext = new ArrayList<String>();
 
                 while (tokenIterator.hasNext()) {
                     Token token = tokenIterator.next();
                     tokens.add(token.lemma.toLowerCase());
 
-                    indexSb.append(token.lemma.toLowerCase()).append(" ");
+                    sentencetext.add(token.lemma.toLowerCase());
+                    sentencesb.append(token.word).append(" ");
 
                     if (token.ne.equals("PERSON")) {
                         currentPerson.append(token.word).append(" ");
@@ -203,8 +204,43 @@ public class ElasticsearchTransformAndIndexTask extends Task {
                     }
                 }
 
+                List<Dependency> dependencies = sentence.dependencies;
+
+                for (Dependency dependency : dependencies) {
+                    if (dependency.rel.equals("subj")
+                            || dependency.rel.equals("nsubj")
+                            || dependency.rel.equals("nsubjpass")
+                            || dependency.rel.equals("csubj")
+                            || dependency.rel.equals("csubjpass")
+                            ) {
+                        subjects.add(dependency.dep.word);
+                    }
+
+                    if (dependency.rel.equals("obj")
+                            || dependency.rel.equals("dobj")
+                            || dependency.rel.equals("pobj")
+                            || dependency.rel.equals("xobj")
+                            || dependency.rel.equals("iobj")
+                            ) {
+                        objects.add(dependency.dep.word);
+                    }
+
+                }
+
                 sentence.sentiment = sentence.sentiments.get(0).prediction; // XXX Needs to pull by model name.
-                sentence.indextext = indexSb.toString();
+                sentence.subjects = subjects;
+                sentence.objects = objects;
+
+                Collections.sort(sentencetext);
+                sentence.text = sentencesb.toString().trim();
+                sentencesb = new StringBuilder();
+
+                for (String t : sentencetext) {
+                    sentencesb.append(t).append(" ");
+                }
+                sentence.indextext = sentencesb.toString().replaceAll("[^a-zA-Z ]", "").trim();
+
+
                 try {
                     indexSentence(sentence, article);
                 } catch (IOException e) {
@@ -233,6 +269,9 @@ public class ElasticsearchTransformAndIndexTask extends Task {
             article.persons = persons;
         } else {
             HashSet<String> currentPersons = article.persons;
+            if (currentPersons == null) {
+                currentPersons = new HashSet<String>();
+            }
             currentPersons.addAll(persons);
             article.persons = currentPersons;
         }
@@ -241,6 +280,9 @@ public class ElasticsearchTransformAndIndexTask extends Task {
             article.organizations = organizations;
         } else {
             HashSet<String> currentOrganizations = article.organizations;
+            if (currentOrganizations == null) {
+                currentOrganizations = new HashSet<String>();
+            }
             currentOrganizations.addAll(organizations);
             article.organizations = currentOrganizations;
         }
@@ -249,9 +291,33 @@ public class ElasticsearchTransformAndIndexTask extends Task {
             article.locations = locations;
         } else {
             HashSet<String> currentLocations = article.locations;
+            if (currentLocations == null) {
+                currentLocations = new HashSet<String>();
+            }
             currentLocations.addAll(locations);
             article.locations = currentLocations;
+        }
 
+        if (!subjects.isEmpty()) {
+            article.subjects = subjects;
+        } else {
+            HashSet<String> currentSubjects = article.subjects;
+            if (currentSubjects == null) {
+                currentSubjects = new HashSet<String>();
+            }
+            currentSubjects.addAll(subjects);
+            article.subjects = currentSubjects;
+        }
+
+        if (!objects.isEmpty()) {
+            article.objects = objects;
+        } else {
+            HashSet<String> currentObjects = article.objects;
+            if (currentObjects == null) {
+                currentObjects = new HashSet<String>();
+            }
+            currentObjects.addAll(objects);
+            article.objects = currentObjects;
         }
 
         IndexResponse indexResponse = null;
@@ -265,6 +331,41 @@ public class ElasticsearchTransformAndIndexTask extends Task {
         if (indexResponse != null) {
             this.successful = indexResponse.isCreated();
         }
+    }
+
+    public IndexResponse indexArticle(Article a) throws IOException {
+
+        XContentBuilder sourceBuilder = XContentFactory.jsonBuilder().startObject()
+                .field("persons", a.persons)
+                .field("organizations", a.organizations)
+                .field("date", a.publish_date.toString())
+                .field("locations", a.locations)
+                .field("media_id", a.media_id)
+                .field("subjects", a.subjects)
+                .field("objects", a.objects)
+                .field("indextext", a.indextext);
+        IndexRequest request = new IndexRequest(indexName, "article").id(String.valueOf(a._id)).source(sourceBuilder);
+
+        return client.index(request).actionGet();
+    }
+
+    public IndexResponse indexSentence(Sentence s, Article a) throws IOException {
+        XContentBuilder sourceBuilder = XContentFactory.jsonBuilder().startObject()
+                .field("persons", s.persons)
+                .field("organizations", s.organizations)
+                .field("date", a.publish_date.toString())
+                .field("locations", s.locations)
+                .field("sentiment", s.sentiment)
+                .field("subjects", s.subjects)
+                .field("objects", s.objects)
+                .field("parent_id", a._id)
+                .field("media_id", a.media_id)
+                .field("text", s.text)
+                .field("indextext", s.indextext);
+        IndexRequest request = new IndexRequest(indexName, "sentence").source(sourceBuilder);
+
+        return client.index(request).actionGet();
+
     }
 
     @Override

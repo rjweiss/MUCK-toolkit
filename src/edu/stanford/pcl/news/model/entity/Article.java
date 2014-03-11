@@ -27,6 +27,17 @@ public class Article implements Serializable {
     public HashSet<String> persons;
     public HashSet<String> organizations;
     public HashSet<String> locations;
+    public HashSet<String> subjects;
+    public HashSet<String> objects;
+
+    // For working with mediacloud data
+
+    public Object publish_date;
+    public Integer media_id;
+    public String id;
+    public String sentence;
+
+
 
     @Override
     public boolean equals(Object obj) {
