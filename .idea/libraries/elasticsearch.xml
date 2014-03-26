@@ -1,0 +1,29 @@
+<component name="libraryTable">
+  <library name="elasticsearch">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/vendor/sigar/sigar-1.6.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/lucene-memory-4.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/lucene-grouping-4.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/lucene-analyzers-common-4.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/lucene-codecs-4.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/elasticsearch-1.0.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/log4j-1.2.17.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/jts-1.12.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/lucene-highlighter-4.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/lucene-queryparser-4.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/lucene-misc-4.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/lucene-core-4.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/lucene-spatial-4.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/jna-3.3.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/lucene-suggest-4.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/lucene-spellchecker-3.6.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/lucene-sandbox-4.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/lucene-join-4.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/lucene-queries-4.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/spatial4j-0.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/spatial4j-0.4.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
