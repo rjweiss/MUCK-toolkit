@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="ejml">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/vendor/stanford-corenlp-full-2014-01-04/ejml-0.23.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
