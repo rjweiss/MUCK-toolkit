@@ -1,11 +1,13 @@
 <component name="libraryTable">
   <library name="mongo-java-driver">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/vendor/mongo-java-driver-2.11.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/mongo-java-driver/mongo-java-driver-2.11.4.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$PROJECT_DIR$/vendor/mongo-java-driver-2.11.4-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/mongo-java-driver/mongo-java-driver-2.11.4-javadoc.jar!/" />
     </JAVADOC>
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/vendor/mongo-java-driver/mongo-java-driver-2.11.4-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>
