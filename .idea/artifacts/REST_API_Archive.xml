@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="REST API Archive">
+    <output-path>$PROJECT_DIR$/out/artifacts/REST_API_Archive</output-path>
+    <root id="archive" name="corenlp.war">
+      <element id="artifact" artifact-name="REST API" />
+    </root>
+  </artifact>
+</component>
