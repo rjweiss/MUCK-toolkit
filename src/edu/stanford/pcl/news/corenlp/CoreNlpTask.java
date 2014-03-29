@@ -80,8 +80,6 @@ public class CoreNlpTask extends Task {
                     s.dependencies = new ArrayList<Dependency>();
                     for (SemanticGraphEdge edge : dependencies.getEdgeSet()) {
                         Dependency d = new Dependency();
-                        d.gov = new Relation();
-                        d.dep = new Relation();
                         d.rel = edge.getRelation().toString();
                         d.gov = new Relation();
                         d.gov.word = edge.getGovernor().word();

@@ -21,8 +21,8 @@ import java.util.*;
 import static org.elasticsearch.client.Requests.createIndexRequest;
 
 public class ElasticsearchTransformAndIndexTask extends Task {
-
     private static final long serialVersionUID = 4733805814140484587L;
+
     private Article article;
     private transient Client client;
     private String indexName = "gist";
@@ -34,12 +34,15 @@ public class ElasticsearchTransformAndIndexTask extends Task {
     @Override
     public void initialize() throws IOException {
         try {
-            this.client = new TransportClient()
-                    .addTransportAddress(new InetSocketTransportAddress("127.0.0.1", 9300));
-        } catch (ElasticsearchException e) {
+            // 9200 is for HTTP
+            // 9300 is for the Java driver
+            this.client = new TransportClient().addTransportAddress(new InetSocketTransportAddress("127.0.0.1", 9300));
+        }
+        catch (ElasticsearchException e) {
 //            e.printStackTrace();
         }
 
+        // XXX  ?
         this.client.admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet();
         ClusterStateResponse response = this.client.admin().cluster().prepareState().execute().actionGet();
         boolean hasIndex = response.getState().metaData().hasIndex(this.indexName);
@@ -132,25 +135,30 @@ public class ElasticsearchTransformAndIndexTask extends Task {
 
         try {
             sentences = this.article.corenlp.sentences;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
 //            e.printStackTrace();
         }
 
         ArrayList<String> tokens = new ArrayList<String>();
-        HashSet<String> persons = new HashSet<String>();
-        HashSet<String> organizations = new HashSet<String>();
-        HashSet<String> locations = new HashSet<String>();
-        HashSet<String> subjects = new HashSet<String>();
-        HashSet<String> objects = new HashSet<String>();
+        Set<String> persons = new HashSet<String>();
+        Set<String> organizations = new HashSet<String>();
+        Set<String> locations = new HashSet<String>();
+        Set<String> subjects = new HashSet<String>();
+        Set<String> objects = new HashSet<String>();
 
         Iterator<Sentence> sentenceIterator = null;
         try {
             sentenceIterator = sentences.iterator();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
 //            e.printStackTrace();
         }
 
         if (sentenceIterator != null) {
+            // Iterate through sentences, extract the NLP annotations, transform and add to sentence object for indexing.
+            // N-grams for persons, organizations, locations, subjects, objects, and sentiment.
+
             while (sentenceIterator.hasNext()) {
                 Sentence sentence = sentenceIterator.next();
                 sentence.persons = new HashSet<String>();
@@ -165,7 +173,7 @@ public class ElasticsearchTransformAndIndexTask extends Task {
                 StringBuilder currentPerson = new StringBuilder();
                 StringBuilder currentOrganization = new StringBuilder();
                 StringBuilder currentLocation = new StringBuilder();
-                ArrayList<String> sentencetext = new ArrayList<String>();
+                List<String> sentencetext = new ArrayList<String>();
 
                 while (tokenIterator.hasNext()) {
                     Token token = tokenIterator.next();
@@ -176,7 +184,8 @@ public class ElasticsearchTransformAndIndexTask extends Task {
 
                     if (token.ne.equals("PERSON")) {
                         currentPerson.append(token.word).append(" ");
-                    } else {
+                    }
+                    else {
                         if (currentPerson.length() > 0) {
                             persons.add(currentPerson.toString().trim());
                             sentence.persons.add(currentPerson.toString().trim());
@@ -186,7 +195,8 @@ public class ElasticsearchTransformAndIndexTask extends Task {
 
                     if (token.ne.equals("ORGANIZATION")) {
                         currentOrganization.append(token.word).append(" ");
-                    } else {
+                    }
+                    else {
                         if (currentOrganization.length() > 0) {
                             organizations.add(currentOrganization.toString().trim());
                             sentence.organizations.add(currentOrganization.toString().trim());
@@ -195,7 +205,8 @@ public class ElasticsearchTransformAndIndexTask extends Task {
                     }
                     if (token.ne.equals("LOCATION")) {
                         currentLocation.append(token.word).append(" ");
-                    } else {
+                    }
+                    else {
                         if (currentLocation.length() > 0) {
                             locations.add(currentLocation.toString().trim());
                             sentence.locations.add(currentLocation.toString().trim());
@@ -227,7 +238,8 @@ public class ElasticsearchTransformAndIndexTask extends Task {
 
                 }
 
-                sentence.sentiment = sentence.sentiments.get(0).prediction; // XXX Needs to pull by model name.
+                // XXX  Needs to pull by model name.
+                sentence.sentiment = sentence.sentiments.get(0).prediction;
                 sentence.subjects = subjects;
                 sentence.objects = objects;
 
@@ -243,7 +255,8 @@ public class ElasticsearchTransformAndIndexTask extends Task {
 
                 try {
                     indexSentence(sentence, article);
-                } catch (IOException e) {
+                }
+                catch (IOException e) {
                     e.printStackTrace();
                 }
             }
@@ -267,8 +280,9 @@ public class ElasticsearchTransformAndIndexTask extends Task {
 
         if (!persons.isEmpty()) {
             article.persons = persons;
-        } else {
-            HashSet<String> currentPersons = article.persons;
+        }
+        else {
+            Set<String> currentPersons = article.persons;
             if (currentPersons == null) {
                 currentPersons = new HashSet<String>();
             }
@@ -278,8 +292,9 @@ public class ElasticsearchTransformAndIndexTask extends Task {
 
         if (!organizations.isEmpty()) {
             article.organizations = organizations;
-        } else {
-            HashSet<String> currentOrganizations = article.organizations;
+        }
+        else {
+            Set<String> currentOrganizations = article.organizations;
             if (currentOrganizations == null) {
                 currentOrganizations = new HashSet<String>();
             }
@@ -289,8 +304,9 @@ public class ElasticsearchTransformAndIndexTask extends Task {
 
         if (!locations.isEmpty()) {
             article.locations = locations;
-        } else {
-            HashSet<String> currentLocations = article.locations;
+        }
+        else {
+            Set<String> currentLocations = article.locations;
             if (currentLocations == null) {
                 currentLocations = new HashSet<String>();
             }
@@ -300,8 +316,9 @@ public class ElasticsearchTransformAndIndexTask extends Task {
 
         if (!subjects.isEmpty()) {
             article.subjects = subjects;
-        } else {
-            HashSet<String> currentSubjects = article.subjects;
+        }
+        else {
+            Set<String> currentSubjects = article.subjects;
             if (currentSubjects == null) {
                 currentSubjects = new HashSet<String>();
             }
@@ -311,8 +328,9 @@ public class ElasticsearchTransformAndIndexTask extends Task {
 
         if (!objects.isEmpty()) {
             article.objects = objects;
-        } else {
-            HashSet<String> currentObjects = article.objects;
+        }
+        else {
+            Set<String> currentObjects = article.objects;
             if (currentObjects == null) {
                 currentObjects = new HashSet<String>();
             }
@@ -323,7 +341,8 @@ public class ElasticsearchTransformAndIndexTask extends Task {
         IndexResponse indexResponse = null;
         try {
             indexResponse = indexArticle(article);
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
 

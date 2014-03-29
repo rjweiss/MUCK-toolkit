@@ -43,8 +43,7 @@ public class MongoCollectionToElasticSearchTaskRunner extends TaskRunner {
     public Task next() {
         BasicDBObject query = new BasicDBObject("processed", "CoreNLP");
         BasicDBObject sort = new BasicDBObject("$natural", 1);
-        BasicDBObject update = new BasicDBObject();
-        update.append("$set", new BasicDBObject("processed", true));
+        BasicDBObject update = new BasicDBObject().append("$set", new BasicDBObject("processed", "Indexing"));
 
         DBObject doc = this.collection.findAndModify(query, sort, update);
 
