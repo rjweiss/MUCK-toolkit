@@ -9,8 +9,12 @@ import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.ling.Label;
 import edu.stanford.nlp.neural.rnn.RNNCoreAnnotations;
 import edu.stanford.nlp.pipeline.Annotation;
+import edu.stanford.nlp.semgraph.SemanticGraph;
+import edu.stanford.nlp.semgraph.SemanticGraphCoreAnnotations;
+import edu.stanford.nlp.semgraph.SemanticGraphEdge;
 import edu.stanford.nlp.sentiment.SentimentCoreAnnotations;
 import edu.stanford.nlp.util.CoreMap;
+import edu.stanford.pcl.news.NewsProperties;
 import edu.stanford.pcl.news.corenlp.CoreNlpFactory;
 import edu.stanford.pcl.news.corenlp.CoreNlpPipeline;
 import edu.stanford.pcl.news.model.entity.*;
@@ -143,11 +147,24 @@ public class Annotator {
                 }
 
                 // Store dependencies.  Don't bother if the token length is greater than the parser's token limit.
-//                if (s.tokens.size() <= PARSE_MAXLEN) {
-//                    SemanticGraph dependencies = sentence.get(SemanticGraphCoreAnnotations.CollapsedCCProcessedDependenciesAnnotation.class);
-//                    s.dependencies = new ArrayList<String>();
-//                    Collections.addAll(s.dependencies, dependencies.toPOSList().split("\n"));
-//                }
+                if (s.tokens.size() <= Integer.parseInt(NewsProperties.getProperty("corenlp.parse.maxlen"))) {
+                    SemanticGraph dependencies = sentence.get(SemanticGraphCoreAnnotations.CollapsedCCProcessedDependenciesAnnotation.class);
+
+                    s.dependencies = new ArrayList<Dependency>();
+                    for (SemanticGraphEdge edge : dependencies.getEdgeSet()) {
+                        Dependency d = new Dependency();
+                        d.gov = new Relation();
+                        d.dep = new Relation();
+                        d.rel = edge.getRelation().toString();
+                        d.gov = new Relation();
+                        d.gov.word = edge.getGovernor().word();
+                        d.gov.index = edge.getGovernor().index();
+                        d.dep = new Relation();
+                        d.dep.word = edge.getDependent().word();
+                        d.dep.index = edge.getDependent().index();
+                        s.dependencies.add(d);
+                    }
+                }
 
                 // Sentiment
                 s.sentiments = new ArrayList<Sentiment>();
