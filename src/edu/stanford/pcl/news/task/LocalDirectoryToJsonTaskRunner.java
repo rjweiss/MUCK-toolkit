@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.rmi.RemoteException;
 import java.util.concurrent.LinkedBlockingQueue;
 
 
@@ -73,9 +74,9 @@ public class LocalDirectoryToJsonTaskRunner extends TaskRunner {
 
         registerResolver(ParserTask.class, new TaskResolver<ParserTask>() {
             @Override
-            public void resolve(ParserTask task) {
+            public void resolve(ParserTask task) throws RemoteException {
                 Task continuationTask = new CoreNlpTask(task.getArticle());
-                server.getTaskQueue().putContinuationTask(continuationTask);
+                server.putContinuationTask(continuationTask);
             }
         });
 
