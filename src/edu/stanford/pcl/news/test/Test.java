@@ -1,9 +1,4 @@
-
 package edu.stanford.pcl.news.test;
-
-import edu.stanford.pcl.news.task.MongoCollectionToElasticSearchTaskRunner;
-import edu.stanford.pcl.news.task.MongoCollectionToMongoCollectionTaskRunner;
-import edu.stanford.pcl.news.task.TaskRunner;
 
 public class Test {
 
@@ -21,9 +16,11 @@ public class Test {
 //        TaskRunner NLPrunner = new MongoCollectionToMongoCollectionTaskRunner("localhost", "election2012_test", "dev");
 //        NLPrunner.start();
 
-        TaskRunner ESrunner = new MongoCollectionToElasticSearchTaskRunner(
-                "localhost", "election2012_test", "dev");
-        ESrunner.start();
+//        TaskRunner ESrunner = new MongoCollectionToElasticSearchTaskRunner("localhost", "election2012_test", "dev");
+//        ESrunner.start();
+
+//        AwsTaskRunner runner = new MongoCollectionToMongoCollectionAwsTaskRunner("mongodb.example.com", "newsfeed", "articles_dev", "ami-bba18dd2", "m3.medium", "MuckKeyPair", "MuckSecurityGroup", 1, "0.03");
+//        runner.start();
 
     }
 

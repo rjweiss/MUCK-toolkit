@@ -14,7 +14,7 @@ public class MongoCollectionToMongoCollectionTaskRunner extends TaskRunner {
 
     private DBCollection collection;
 
-    public MongoCollectionToMongoCollectionTaskRunner(String host, String db, String collection, String outputPath) throws FileNotFoundException {
+    public MongoCollectionToMongoCollectionTaskRunner(String host, String db, String collection) throws FileNotFoundException {
         try {
             MongoClient mongodb = new MongoClient(host);
             DB db1 = mongodb.getDB(db);

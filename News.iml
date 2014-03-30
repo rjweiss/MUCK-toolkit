@@ -25,12 +25,13 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="gson" level="project" />
+    <orderEntry type="library" name="google-gson" level="project" />
     <orderEntry type="library" name="mongo-java-driver" level="project" />
     <orderEntry type="library" name="stanford-corenlp" level="project" />
-    <orderEntry type="library" name="solr-solrj" level="project" />
-    <orderEntry type="library" name="ejml" level="project" />
+    <orderEntry type="library" name="apache-solr" level="project" />
     <orderEntry type="library" name="jaxrs-ri" level="project" />
+    <orderEntry type="library" name="elasticsearch" level="project" />
+    <orderEntry type="library" name="aws-java-sdk" level="project" />
   </component>
 </module>
 

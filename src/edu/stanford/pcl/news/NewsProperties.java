@@ -1,4 +1,3 @@
-
 package edu.stanford.pcl.news;
 
 import java.io.FileInputStream;
@@ -14,8 +13,8 @@ public class NewsProperties {
         defaults.setProperty("task.abort.seconds", "300");
         defaults.setProperty("corenlp.parse.maxlen", "150");
         defaults.setProperty("rmi.registry.hostname", "localhost");
-        defaults.setProperty("rmi.registry.port", "1089");
-        defaults.setProperty("rmi.server.port", "54321");
+        defaults.setProperty("rmi.registry.port", "1099");
+        defaults.setProperty("rmi.server.port", "12345");
     }
 
     private static NewsProperties singleton = new NewsProperties();

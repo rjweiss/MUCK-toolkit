@@ -1,17 +1,14 @@
-
 package edu.stanford.pcl.news.model.entity;
 
 import edu.stanford.pcl.news.model.Serialization;
 import org.bson.types.ObjectId;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
 
 public class Article implements Serializable {
-    private static final long serialVersionUID = 5139318906731251221L;
+    private static final long serialVersionUID = -8317131662743944911L;
 
     public ObjectId _id;
 
@@ -23,20 +20,20 @@ public class Article implements Serializable {
     public String body;
     public Set<Descriptor> descriptors;
     public CoreNlp corenlp;
+
+    // Elasticsearch
     public String indextext;
-    public HashSet<String> persons;
-    public HashSet<String> organizations;
-    public HashSet<String> locations;
-    public HashSet<String> subjects;
-    public HashSet<String> objects;
+    public Set<String> persons;
+    public Set<String> organizations;
+    public Set<String> locations;
+    public Set<String> subjects;
+    public Set<String> objects;
 
-    // For working with mediacloud data
-
+    // For working with MediaCloud data
     public Object publish_date;
     public Integer media_id;
     public String id;
     public String sentence;
-
 
 
     @Override

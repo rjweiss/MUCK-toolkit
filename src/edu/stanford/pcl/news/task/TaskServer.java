@@ -1,15 +1,9 @@
 
 package edu.stanford.pcl.news.task;
 
-import edu.stanford.pcl.news.parser.ParserTask;
+import edu.stanford.pcl.news.NewsProperties;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.lang.reflect.Type;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -23,18 +17,6 @@ import java.util.Map;
 public class TaskServer implements RemoteTaskServer {
     // XXX  Needed to hold a strong reference to the server in the RMI registry.
     private static TaskServer server;
-
-    private static String readFile(File file) throws IOException {
-        FileInputStream stream = new FileInputStream(file);
-        try {
-            FileChannel fc = stream.getChannel();
-            MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
-            return Charset.defaultCharset().decode(bb).toString();
-        }
-        finally {
-            stream.close();
-        }
-    }
 
 
     private TaskQueue taskQueue;
@@ -56,11 +38,30 @@ public class TaskServer implements RemoteTaskServer {
         resolverList.add(resolver);
     }
 
+    public String getHostname() {
+        return "127.0.0.1";
+    }
+
     public void start() throws RemoteException {
+        System.setProperty("java.rmi.server.hostname", getHostname());
+        LocateRegistry.createRegistry(Integer.valueOf(NewsProperties.getProperty("rmi.registry.port")));
         Registry registry = LocateRegistry.getRegistry();
         registry.rebind("TaskServer", UnicastRemoteObject.exportObject(server, 23456)); //  XXX  Some arbitrary port.
         System.out.println("Server ready.");
     }
+
+    @Override
+    public void putTask(Task task) throws RemoteException {
+        taskQueue.putPrimaryTask(task);
+        log("enqueued", task);
+    }
+
+    @Override
+    public void putContinuationTask(Task task) throws RemoteException {
+        taskQueue.putContinuationTask(task);
+        log("enqueued", task);
+    }
+
 
     @Override
     public Task takeTask(String workerId) throws RemoteException {
@@ -92,32 +93,6 @@ public class TaskServer implements RemoteTaskServer {
         }
     }
 
-    public TaskQueue getTaskQueue() {
-        return taskQueue;
-    }
-
-
-    private void traverse(File file) {
-        if (file == null) return;
-        File[] files = file.listFiles();
-        if (files == null) return;
-        for (File f : files) {
-            if (f.isFile() && f.getName().endsWith(".xml")) {
-                try {
-                    Task task = new ParserTask(f.getAbsolutePath(), readFile(f));
-                    taskQueue.putPrimaryTask(task);
-                    log("enqueued", task);
-                }
-                catch (IOException e) {
-                    // XXX  Log and skip it?
-                }
-            }
-            else if (f.isDirectory()) {
-                traverse(f);
-            }
-        }
-    }
-
 
     private static void log(String operation, Task task) {
         System.out.printf("%d\t%d\t%s\t%s\n", System.currentTimeMillis(), Thread.currentThread().getId(), operation, task);
@@ -127,6 +102,7 @@ public class TaskServer implements RemoteTaskServer {
         System.out.printf("%d\t%d\t%s\t%s\n", System.currentTimeMillis(), Thread.currentThread().getId(), operation, message);
     }
 
+
     public static void main(String[] args) {
         try {
             server = new TaskServer();
@@ -134,16 +110,6 @@ public class TaskServer implements RemoteTaskServer {
 
             // Print log column headers.
             System.out.println("UNIXTIMESTAMP\tTID\tOPERATION\tTASKNAME\tTASKWORKERID\tDONE\tSUCCESS\tMS\tFILE");
-            System.err.println("UNIXTIMESTAMP\tTID\tOPER\tTASKWORKERID\tT\tC\tR");
-
-
-            // For now, simply enqueue a task for each article.
-            File dataRootDirectory = new File("/news/data");
-            if (dataRootDirectory.exists()) {
-                server.traverse(dataRootDirectory);
-            }
-
-            System.out.println("Traversal completed.");
         }
         catch (Exception e) {
             // XXX ...

@@ -14,9 +14,9 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class TaskRunner {
-    protected TaskServer server;
+    protected RemoteTaskServer server;
     private List<TaskWorker> workers = new ArrayList<TaskWorker>();
-    private Map<Type, List<TaskResolver>> resolvers = new HashMap<Type, List<TaskResolver>>();
+    protected Map<Type, List<TaskResolver>> resolvers = new HashMap<Type, List<TaskResolver>>();
 
 
     public TaskRunner() {
@@ -45,7 +45,7 @@ public abstract class TaskRunner {
 
     public abstract Task next();
 
-    public void start() {
+    public void start() throws RemoteException {
         if (this.server == null) {
             throw new IllegalStateException("No TaskServer has been registered.");
         }
@@ -56,25 +56,20 @@ public abstract class TaskRunner {
             }
         }
 
-        try {
-            // XXX  Remove this stuff and only use RMI when necessary.
+        // XXX  Remove this stuff and only use RMI when necessary.
 //            System.setProperty("java.rmi.server.codebase", NewsProperties.getProperty("rmi.registry.codebase"));
 //            System.setProperty("java.rmi.server.hostname", NewsProperties.getProperty("rmi.registry.hostname"));
-            Registry registry = LocateRegistry.createRegistry(Integer.parseInt(NewsProperties.getProperty("rmi.registry.port")));
-            registry.rebind("TaskServer", UnicastRemoteObject.exportObject(server, Integer.parseInt(NewsProperties.getProperty("rmi.server.port"))));
+        Registry registry = LocateRegistry.createRegistry(Integer.parseInt(NewsProperties.getProperty("rmi.registry.port")));
+        registry.rebind("TaskServer", UnicastRemoteObject.exportObject(server, Integer.parseInt(NewsProperties.getProperty("rmi.server.port"))));
 
-            for (TaskWorker worker : workers) {
-                worker.register(NewsProperties.getProperty("rmi.registry.hostname"));
-                worker.start();
-            }
-
-            Task task;
-            while ((task = next()) != null) {
-                server.getTaskQueue().putPrimaryTask(task);
-            }
+        for (TaskWorker worker : workers) {
+            worker.register(NewsProperties.getProperty("rmi.registry.hostname"));
+            worker.start();
         }
-        catch (RemoteException e) {
-            e.printStackTrace();
+
+        Task task;
+        while ((task = next()) != null) {
+            server.putTask(task);
         }
     }
 }

@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="MUCK">
+    <output-path>$PROJECT_DIR$/out/artifacts/MUCK</output-path>
+    <root id="archive" name="muck.jar">
+      <element id="module-output" name="News" />
+      <element id="library" level="project" name="aws-java-sdk" />
+    </root>
+  </artifact>
+</component>

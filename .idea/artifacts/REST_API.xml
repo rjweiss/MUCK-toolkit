@@ -1,0 +1,21 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="REST API">
+    <output-path>$PROJECT_DIR$/out/artifacts/REST_API</output-path>
+    <root id="root">
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="google-gson" />
+          <element id="library" level="project" name="jaxrs-ri" />
+          <element id="library" level="project" name="mongo-java-driver" />
+          <element id="library" level="project" name="apache-solr" />
+          <element id="library" level="project" name="stanford-corenlp" />
+        </element>
+        <element id="directory" name="classes">
+          <element id="module-output" name="News" />
+        </element>
+        <element id="file-copy" path="$PROJECT_DIR$/WEB-INF/web.xml" />
+      </element>
+      <element id="javaee-facet-resources" facet="News/web/Web" />
+    </root>
+  </artifact>
+</component>
