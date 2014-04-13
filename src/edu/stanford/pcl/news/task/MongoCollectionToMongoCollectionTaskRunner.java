@@ -1,20 +1,23 @@
 
 package edu.stanford.pcl.news.task;
 
+import java.io.FileNotFoundException;
+import java.net.UnknownHostException;
+
 import com.mongodb.*;
 import com.mongodb.util.JSON;
 import edu.stanford.pcl.news.corenlp.CoreNlpTask;
 import edu.stanford.pcl.news.model.Serialization;
 import edu.stanford.pcl.news.model.entity.Article;
 
-import java.io.FileNotFoundException;
-import java.net.UnknownHostException;
-
 public class MongoCollectionToMongoCollectionTaskRunner extends TaskRunner {
 
     private DBCollection collection;
 
     public MongoCollectionToMongoCollectionTaskRunner(String host, String db, String collection) throws FileNotFoundException {
+        // XXX  Need at least one worker.
+        registerWorker(new TaskWorker());
+
         try {
             MongoClient mongodb = new MongoClient(host);
             DB db1 = mongodb.getDB(db);

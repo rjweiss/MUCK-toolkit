@@ -2,11 +2,6 @@
 package edu.stanford.pcl.news.task;
 
 
-import edu.stanford.pcl.news.corenlp.CoreNlpTask;
-import edu.stanford.pcl.news.model.Serialization;
-import edu.stanford.pcl.news.model.entity.Article;
-import edu.stanford.pcl.news.parser.ParserTask;
-
 import java.io.*;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -18,6 +13,11 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.rmi.RemoteException;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import edu.stanford.pcl.news.corenlp.CoreNlpTask;
+import edu.stanford.pcl.news.model.Serialization;
+import edu.stanford.pcl.news.model.entity.Article;
+import edu.stanford.pcl.news.parser.ParserTask;
 
 
 public class LocalDirectoryToJsonTaskRunner extends TaskRunner {
@@ -40,6 +40,9 @@ public class LocalDirectoryToJsonTaskRunner extends TaskRunner {
 
 
     public LocalDirectoryToJsonTaskRunner(String directory, String outputPath) throws FileNotFoundException {
+        // XXX  Need at least one worker.
+        registerWorker(new TaskWorker());
+
         paths = new LinkedBlockingQueue<Path>(1);
 
         fileVisitor = new SimpleFileVisitor<Path>() {

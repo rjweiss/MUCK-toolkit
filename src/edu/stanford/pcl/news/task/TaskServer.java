@@ -1,8 +1,6 @@
 
 package edu.stanford.pcl.news.task;
 
-import edu.stanford.pcl.news.NewsProperties;
-
 import java.lang.reflect.Type;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -12,6 +10,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import edu.stanford.pcl.news.NewsProperties;
 
 
 public class TaskServer implements RemoteTaskServer {
@@ -109,7 +109,7 @@ public class TaskServer implements RemoteTaskServer {
             server.start();
 
             // Print log column headers.
-            System.out.println("UNIXTIMESTAMP\tTID\tOPERATION\tTASKNAME\tTASKWORKERID\tDONE\tSUCCESS\tMS\tFILE");
+            System.out.println("UNIXTIMESTAMP\tTID\tOPERATION\tTASKNAME\tTASKWORKERID\tDONE\tSUCCESS\tRETRIES\tMS\tFILE");
         }
         catch (Exception e) {
             // XXX ...

@@ -19,7 +19,7 @@ public class Test {
 //        TaskRunner ESrunner = new MongoCollectionToElasticSearchTaskRunner("localhost", "election2012_test", "dev");
 //        ESrunner.start();
 
-//        AwsTaskRunner runner = new MongoCollectionToMongoCollectionAwsTaskRunner("mongodb.example.com", "newsfeed", "articles_dev", "ami-bba18dd2", "m3.medium", "MuckKeyPair", "MuckSecurityGroup", 1, "0.03");
+//        AwsTaskRunner runner = new MongoCollectionToMongoCollectionAwsTaskRunner("MUCK Task", "mongodb.example.com", "test", "collection", "ami-bba18dd2", "m3.medium", "MuckKeyPair", "MuckSecurityGroup", 1, "0.03");
 //        runner.start();
 
     }

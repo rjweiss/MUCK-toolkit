@@ -1,12 +1,12 @@
 package edu.stanford.pcl.news.aws;
 
-import edu.stanford.pcl.news.NewsProperties;
-import edu.stanford.pcl.news.task.TaskServer;
-
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+
+import edu.stanford.pcl.news.NewsProperties;
+import edu.stanford.pcl.news.task.TaskServer;
 
 
 public class AwsTaskServer extends TaskServer {
@@ -33,7 +33,7 @@ public class AwsTaskServer extends TaskServer {
             server.start();
 
             // Print log column headers.
-            System.out.println("UNIXTIMESTAMP\tTID\tOPERATION\tTASKNAME\tTASKWORKERID\tDONE\tSUCCESS\tMS\tFILE");
+            System.out.println("UNIXTIMESTAMP\tTID\tOPERATION\tTASKNAME\tTASKWORKERID\tDONE\tSUCCESS\tRETRIES\tMS\tFILE");
         }
         catch (Exception e) {
             // XXX ...

@@ -1,14 +1,5 @@
 package edu.stanford.pcl.news.task;
 
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.MongoClient;
-import com.mongodb.util.JSON;
-import edu.stanford.pcl.news.corenlp.CoreNlpTask;
-import edu.stanford.pcl.news.model.Serialization;
-import edu.stanford.pcl.news.parser.ParserTask;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -23,6 +14,15 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.rmi.RemoteException;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.MongoClient;
+import com.mongodb.util.JSON;
+import edu.stanford.pcl.news.corenlp.CoreNlpTask;
+import edu.stanford.pcl.news.model.Serialization;
+import edu.stanford.pcl.news.parser.ParserTask;
 
 
 public class LocalDirectoryToMongoCollectionTaskRunner extends TaskRunner {
@@ -49,6 +49,9 @@ public class LocalDirectoryToMongoCollectionTaskRunner extends TaskRunner {
 
 
     public LocalDirectoryToMongoCollectionTaskRunner(String directory, String host, String db, String collection) {
+        // XXX  Need at least one worker.
+        registerWorker(new TaskWorker());
+
         paths = new LinkedBlockingQueue<Path>(1);
 
         fileVisitor = new SimpleFileVisitor<Path>() {
