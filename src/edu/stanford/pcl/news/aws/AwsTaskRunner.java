@@ -37,8 +37,8 @@ public abstract class AwsTaskRunner extends TaskRunner {
     @Override
     public void start() throws RemoteException {
         String serverUserData = AwsUtil.createUserDataScript(
-                "wget https://s3.amazonaws.com/MUCK/muck-bundle-0.0.1.jar",
-                "java -cp muck-bundle-0.0.1.jar edu.stanford.pcl.news.aws.AwsTaskServer > /server.log 2>&1"
+                "wget https://s3.amazonaws.com/MUCK/muck-bundle-0.0.2.jar",
+                "java -cp muck-bundle-0.0.2.jar edu.stanford.pcl.news.aws.AwsTaskServer > /server.log 2>&1"
         );
         String instanceId = AwsUtil.startInstance(String.format("%s %s", name, "Instance"), ami, instanceType, keyPairName, securityGroupName, serverUserData);
 
