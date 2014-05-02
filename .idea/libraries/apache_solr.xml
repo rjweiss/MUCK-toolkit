@@ -1,29 +1,32 @@
 <component name="libraryTable">
   <library name="apache-solr">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.6.1/solr-4.6.1/dist/solr-solrj-4.6.1.jar!/" />
-      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.6.1/solr-4.6.1/dist/solrj-lib/httpclient-4.2.6.jar!/" />
-      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.6.1/solr-4.6.1/dist/solrj-lib/httpcore-4.2.5.jar!/" />
-      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.6.1/solr-4.6.1/dist/solrj-lib/httpmime-4.2.6.jar!/" />
-      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.6.1/solr-4.6.1/dist/solrj-lib/slf4j-api-1.6.6.jar!/" />
-      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.6.1/solr-4.6.1/dist/solrj-lib/slf4j-log4j12-1.6.6.jar!/" />
-      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.6.1/solr-4.6.1/dist/solrj-lib/log4j-1.2.16.jar!/" />
-      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.6.1/solr-4.6.1/dist/solrj-lib/jcl-over-slf4j-1.6.6.jar!/" />
-      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.6.1/solr-4.6.1/dist/solrj-lib/commons-io-2.1.jar!/" />
-      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.6.1/solr-4.6.1/dist/solrj-lib/jul-to-slf4j-1.6.6.jar!/" />
-      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.6.1/solr-4.6.1/dist/solrj-lib/noggit-0.5.jar!/" />
-      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.6.1/solr-4.6.1/dist/solrj-lib/wstx-asl-3.2.7.jar!/" />
-      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.6.1/solr-4.6.1/dist/solrj-lib/zookeeper-3.4.5.jar!/" />
-      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.6.1/solr-4.6.1/dist/solr-analysis-extras-4.6.1.jar!/" />
-      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.6.1/solr-4.6.1/dist/solr-cell-4.6.1.jar!/" />
-      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.6.1/solr-4.6.1/dist/solr-clustering-4.6.1.jar!/" />
-      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.6.1/solr-4.6.1/dist/solr-core-4.6.1.jar!/" />
-      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.6.1/solr-4.6.1/dist/solr-dataimporthandler-4.6.1.jar!/" />
-      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.6.1/solr-4.6.1/dist/solr-dataimporthandler-extras-4.6.1.jar!/" />
-      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.6.1/solr-4.6.1/dist/solr-langid-4.6.1.jar!/" />
-      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.6.1/solr-4.6.1/dist/solr-test-framework-4.6.1.jar!/" />
-      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.6.1/solr-4.6.1/dist/solr-uima-4.6.1.jar!/" />
-      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.6.1/solr-4.6.1/dist/solr-velocity-4.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.8.0/dist/solr-dataimporthandler-extras-4.8.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.8.0/dist/solr-analysis-extras-4.8.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.8.0/dist/solrj-lib/httpclient-4.3.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.8.0/dist/solr-map-reduce-4.8.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.8.0/dist/solr-velocity-4.8.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.8.0/dist/solr-uima-4.8.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.8.0/dist/solrj-lib/log4j-1.2.16.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.8.0/dist/solr-langid-4.8.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.8.0/dist/solrj-lib/slf4j-api-1.7.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.8.0/dist/solrj-lib/noggit-0.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.8.0/dist/solr-morphlines-cell-4.8.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.8.0/dist/solrj-lib/httpmime-4.3.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.8.0/dist/solr-morphlines-core-4.8.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.8.0/dist/solrj-lib/jcl-over-slf4j-1.7.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.8.0/dist/solrj-lib/commons-io-2.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.8.0/dist/solr-solrj-4.8.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.8.0/dist/solrj-lib/jul-to-slf4j-1.7.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.8.0/dist/solr-cell-4.8.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.8.0/dist/solr-dataimporthandler-4.8.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.8.0/dist/solr-test-framework-4.8.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.8.0/dist/solr-clustering-4.8.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.8.0/dist/solr-core-4.8.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.8.0/dist/solrj-lib/httpcore-4.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.8.0/dist/solrj-lib/slf4j-log4j12-1.7.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.8.0/dist/solrj-lib/wstx-asl-3.2.7.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/apache-solr/solr-4.8.0/dist/solrj-lib/zookeeper-3.4.6.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
