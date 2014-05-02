@@ -1,0 +1,46 @@
+<project name="vendor" basedir=".">
+    <description>
+        This build configuration automates the download and unpacking of vendor libraries for use with this project.
+        Note that the Amazon AWS Java SDK download always fetches the latest SDK.  This means you will likely have to
+        manually edit your project file after the library is unpacked.
+    </description>
+
+    <target name="download">
+        <mkdir dir="apache-solr"/>
+        <get src="http://mirror.cc.columbia.edu/pub/software/apache/lucene/solr/4.8.0/solr-4.8.0.zip" dest="apache-solr" verbose="true" usetimestamp="true"/>
+        <unzip src="apache-solr/solr-4.8.0.zip" dest="apache-solr"/>
+
+        <mkdir dir="apache-tomcat"/>
+        <get src="http://mirror.cc.columbia.edu/pub/software/apache/tomcat/tomcat-7/v7.0.53/bin/apache-tomcat-7.0.53.zip" dest="apache-tomcat" verbose="true" usetimestamp="true"/>
+        <unzip src="apache-tomcat/apache-tomcat-7.0.53.zip" dest="apache-tomcat"/>
+
+        <mkdir dir="aws-java-sdk"/>
+        <get src="http://sdk-for-java.amazonwebservices.com/latest/aws-java-sdk.zip" dest="aws-java-sdk" verbose="true" usetimestamp="true"/>
+        <unzip src="aws-java-sdk/aws-java-sdk.zip" dest="aws-java-sdk"/>
+
+        <mkdir dir="elasticsearch"/>
+        <get src="https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.0.1.zip" dest="elasticsearch" verbose="true" usetimestamp="true"/>
+        <unzip src="elasticsearch/elasticsearch-1.0.1.zip" dest="elasticsearch"/>
+
+        <mkdir dir="google-gson"/>
+        <get src="https://google-gson.googlecode.com/files/google-gson-2.2.4-release.zip" dest="google-gson" verbose="true" usetimestamp="true"/>
+        <unzip src="google-gson/google-gson-2.2.4-release.zip" dest="google-gson"/>
+
+        <mkdir dir="jaxrs-ri"/>
+        <get src="http://repo1.maven.org/maven2/org/glassfish/jersey/bundles/jaxrs-ri/2.6/jaxrs-ri-2.6.zip" dest="jaxrs-ri" verbose="true" usetimestamp="true"/>
+        <unzip src="jaxrs-ri/jaxrs-ri-2.6.zip" dest="jaxrs-ri"/>
+
+        <mkdir dir="mongo-java-driver"/>
+        <get src="http://central.maven.org/maven2/org/mongodb/mongo-java-driver/2.11.4/mongo-java-driver-2.11.4.jar" dest="mongo-java-driver" verbose="true" usetimestamp="true"/>
+        <get src="http://central.maven.org/maven2/org/mongodb/mongo-java-driver/2.11.4/mongo-java-driver-2.11.4-javadoc.jar" dest="mongo-java-driver" verbose="true" usetimestamp="true"/>
+        <get src="http://central.maven.org/maven2/org/mongodb/mongo-java-driver/2.11.4/mongo-java-driver-2.11.4-sources.jar" dest="mongo-java-driver" verbose="true" usetimestamp="true"/>
+
+        <mkdir dir="mongodb"/>
+        <get src="https://fastdl.mongodb.org/win32/mongodb-win32-x86_64-2008plus-2.4.9.zip" dest="mongodb" verbose="true" usetimestamp="true"/>
+        <unzip src="mongodb/mongodb-win32-x86_64-2008plus-2.4.9.zip" dest="mongodb"/>
+
+        <mkdir dir="stanford-corenlp"/>
+        <get src="http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip" dest="stanford-corenlp" verbose="true" usetimestamp="true"/>
+        <unzip src="stanford-corenlp/stanford-corenlp-full-2014-01-04.zip" dest="stanford-corenlp"/>
+    </target>
+</project>
