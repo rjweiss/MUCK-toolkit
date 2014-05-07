@@ -1,13 +1,6 @@
 
 package edu.stanford.pcl.news.task;
 
-import edu.stanford.pcl.news.corenlp.CoreNlpTask;
-import edu.stanford.pcl.news.model.entity.Article;
-import edu.stanford.pcl.news.parser.ParserTask;
-import org.apache.solr.client.solrj.SolrServer;
-import org.apache.solr.client.solrj.impl.HttpSolrServer;
-import org.apache.solr.common.SolrInputDocument;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -22,6 +15,13 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.rmi.RemoteException;
 import java.util.UUID;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import edu.stanford.pcl.news.corenlp.CoreNlpTask;
+import edu.stanford.pcl.news.model.entity.Article;
+import edu.stanford.pcl.news.parser.ParserTask;
+import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.impl.HttpSolrServer;
+import org.apache.solr.common.SolrInputDocument;
 
 
 public class LocalDirectoryToSolrIndexTaskRunner extends TaskRunner {
@@ -46,6 +46,9 @@ public class LocalDirectoryToSolrIndexTaskRunner extends TaskRunner {
 
 
     public LocalDirectoryToSolrIndexTaskRunner(String directory, String core) {
+        // XXX  Need at least one worker.
+        registerWorker(new TaskWorker());
+
         paths = new LinkedBlockingQueue<Path>(1);
 
         fileVisitor = new SimpleFileVisitor<Path>() {

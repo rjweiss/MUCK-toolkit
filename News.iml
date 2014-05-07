@@ -20,8 +20,15 @@
       <excludeFolder url="file://$MODULE_DIR$/archive" />
       <excludeFolder url="file://$MODULE_DIR$/data" />
       <excludeFolder url="file://$MODULE_DIR$/db" />
-      <excludeFolder url="file://$MODULE_DIR$/newsImport" />
-      <excludeFolder url="file://$MODULE_DIR$/vendor/apache-solr/solr-4.6.1/solr-4.6.1/example/solr" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/apache-solr" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/apache-tomcat" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/aws-java-sdk" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/elasticsearch" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/google-gson" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/jaxrs-ri" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/mongo-java-driver" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/mongodb" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/stanford-corenlp" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

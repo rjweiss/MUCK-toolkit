@@ -1,8 +1,6 @@
 package edu.stanford.pcl.news.task;
 
 
-import edu.stanford.pcl.news.NewsProperties;
-
 import java.lang.reflect.Type;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -13,6 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.stanford.pcl.news.NewsProperties;
+
 public abstract class TaskRunner {
     protected RemoteTaskServer server;
     private List<TaskWorker> workers = new ArrayList<TaskWorker>();
@@ -21,8 +21,6 @@ public abstract class TaskRunner {
 
     public TaskRunner() {
         server = new TaskServer();
-        // XXX  Need at least one worker.
-        registerWorker(new TaskWorker());
     }
 
     protected TaskRunner(TaskServer server) {

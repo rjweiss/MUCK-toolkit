@@ -2,4 +2,4 @@
 /archive/
 /data/
 /out/
-/vendor/
+/vendor/**/

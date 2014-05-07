@@ -1,15 +1,6 @@
 package edu.stanford.pcl.news.aws;
 
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.ec2.AmazonEC2;
-import com.amazonaws.services.ec2.AmazonEC2Client;
-import com.amazonaws.services.ec2.model.*;
-import edu.stanford.pcl.news.NewsProperties;
-import org.glassfish.jersey.internal.util.Base64;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -19,6 +10,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.ec2.AmazonEC2;
+import com.amazonaws.services.ec2.AmazonEC2Client;
+import com.amazonaws.services.ec2.model.*;
+import edu.stanford.pcl.news.NewsProperties;
+import org.glassfish.jersey.internal.util.Base64;
 
 public class AwsUtil {
 
@@ -85,7 +85,7 @@ public class AwsUtil {
         return Base64.encodeAsString(sb.toString());
     }
 
-    public static String startInstance(String ami, String instanceType, String keyPairName, String securityGroupName, String userData) {
+    public static String startInstance(String name, String ami, String instanceType, String keyPairName, String securityGroupName, String userData) {
         AWSCredentials credentials = new BasicAWSCredentials(NewsProperties.getProperty("aws.access.key"), NewsProperties.getProperty("aws.secret.key"));
         AmazonEC2 ec2 = new AmazonEC2Client(credentials);
 
@@ -103,6 +103,8 @@ public class AwsUtil {
 
         RunInstancesResult runInstancesResult = ec2.runInstances(runInstancesRequest);
 
+        System.out.println("reservation id: " + runInstancesResult.getReservation().getReservationId());
+
         Reservation reservation = runInstancesResult.getReservation();
         List<Instance> instances = reservation.getInstances();
 
@@ -111,10 +113,17 @@ public class AwsUtil {
             instanceIds.add(instance.getInstanceId());
         }
 
+        CreateTagsRequest createTagsRequest = new CreateTagsRequest();
+        List<Tag> tags = new ArrayList<Tag>();
+        tags.add(new Tag("Name", name));
+        createTagsRequest.setTags(tags);
+        createTagsRequest.withResources(instanceIds);
+        ec2.createTags(createTagsRequest);
+
         return instanceIds.get(0);
     }
 
-    public static ArrayList<String> startSpotInstances(int number, String price, String ami, String instanceType, String keyPairName, String securityGroupName, String userData) {
+    public static ArrayList<String> startSpotInstances(String namePrefix, int number, String price, String ami, String instanceType, String keyPairName, String securityGroupName, String userData) {
         AWSCredentials credentials = new BasicAWSCredentials(NewsProperties.getProperty("aws.access.key"), NewsProperties.getProperty("aws.secret.key"));
         AmazonEC2 ec2 = new AmazonEC2Client(credentials);
 
@@ -147,7 +156,7 @@ public class AwsUtil {
 
         ArrayList<String> spotInstanceRequestIds = new ArrayList<String>();
         for (SpotInstanceRequest requestResponse : spotResponses) {
-            System.out.print("spot request id: " + requestResponse.getSpotInstanceRequestId());
+            System.out.print("\nspot request id: " + requestResponse.getSpotInstanceRequestId());
             spotInstanceRequestIds.add(requestResponse.getSpotInstanceRequestId());
         }
 
@@ -199,6 +208,16 @@ public class AwsUtil {
         } while (anyOpen);
 
         System.out.println();
+
+        int i=1;
+        for (String instanceId : instanceIds) {
+            CreateTagsRequest createTagsRequest = new CreateTagsRequest();
+            List<Tag> tags = new ArrayList<Tag>();
+            tags.add(new Tag("Name", String.format("%s %d", namePrefix, i++)));
+            createTagsRequest.setTags(tags);
+            createTagsRequest.withResources(instanceId);
+            ec2.createTags(createTagsRequest);
+        }
 
         return instanceIds;
     }
