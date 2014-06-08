@@ -59,6 +59,7 @@ public abstract class Task implements Callable<Void>, Serializable {
         catch (RuntimeException e) {
             // XXX
             System.err.println("Caught RuntimeException: " + e.getMessage());
+            e.printStackTrace(System.err);
         }
         finally {
             stop = System.currentTimeMillis();
