@@ -41,6 +41,13 @@ public class MongoCollectionToElasticSearchTaskRunner extends TaskRunner {
                 }
             }
         });
+
+        registerResolver(TerminateTask.class, new TaskResolver<TerminateTask>() {
+            @Override
+            public void resolve(TerminateTask task) {
+                System.exit(0);
+            }
+        });
     }
 
     @Override

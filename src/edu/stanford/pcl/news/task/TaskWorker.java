@@ -1,8 +1,6 @@
 
 package edu.stanford.pcl.news.task;
 
-import edu.stanford.pcl.news.NewsProperties;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
@@ -12,6 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.*;
+
+import edu.stanford.pcl.news.NewsProperties;
 
 public class TaskWorker extends Thread {
     private String id;
@@ -46,6 +46,10 @@ public class TaskWorker extends Thread {
                 try {
                     future.get(Integer.parseInt(NewsProperties.getProperty("task.abort.seconds")), TimeUnit.SECONDS);
                     server.returnTask(task);
+
+                    if (task instanceof TerminateTask) {
+                        break;
+                    }
                 }
                 catch (TimeoutException e) {
                     task.successful = false;

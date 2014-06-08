@@ -69,5 +69,11 @@ public abstract class TaskRunner {
         while ((task = next()) != null) {
             server.putTask(task);
         }
+
+        // XXX  Need to put this somewhere.
+//        UnicastRemoteObject.unexportObject(server, false);
+
+        server.putTask(new TerminateTask());
+
     }
 }
