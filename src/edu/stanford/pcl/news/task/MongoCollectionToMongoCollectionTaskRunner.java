@@ -1,7 +1,6 @@
 
 package edu.stanford.pcl.news.task;
 
-import java.io.FileNotFoundException;
 import java.net.UnknownHostException;
 
 import com.mongodb.*;
@@ -14,7 +13,7 @@ public class MongoCollectionToMongoCollectionTaskRunner extends TaskRunner {
 
     private DBCollection collection;
 
-    public MongoCollectionToMongoCollectionTaskRunner(String host, String db, String collection) throws FileNotFoundException {
+    public MongoCollectionToMongoCollectionTaskRunner(String host, String db, String collection) {
         // XXX  Need at least one worker.
         registerWorker(new TaskWorker());
 
@@ -33,9 +32,10 @@ public class MongoCollectionToMongoCollectionTaskRunner extends TaskRunner {
             @Override
             public void resolve(CoreNlpTask task) {
                 if (task.isSuccessful()) {
-                    dbCollection.save((DBObject)JSON.parse(Serialization.toMongoJson(task.getArticle())));
-
-                    // XXX  There needs to be a step where after the CoreNLP task is resolved, the document's "processed" field is set to "true".
+                    DBObject dbObject = (DBObject)JSON.parse(Serialization.toMongoJson(task.getArticle()));
+                    // XXX  Need to put the processed flag in the entity, and think about entity state more generically.
+                    dbObject.put("processed", "annotated");
+                    dbCollection.save(dbObject);
                 }
             }
         });
@@ -43,12 +43,10 @@ public class MongoCollectionToMongoCollectionTaskRunner extends TaskRunner {
 
     @Override
     public Task next() {
-        BasicDBObject query = new BasicDBObject("processed", false);
-        BasicDBObject sort = new BasicDBObject("$natural", 1);
-        BasicDBObject update = new BasicDBObject();
-        update.append("$set", new BasicDBObject("processed", "CoreNLP"));
+        BasicDBObject query = new BasicDBObject("processed", "downloaded");
+        BasicDBObject update = new BasicDBObject("$set", new BasicDBObject("processed", "annotating"));
 
-        DBObject doc = this.collection.findAndModify(query, sort, update);
+        DBObject doc = this.collection.findAndModify(query, update);
 
         try {
             if (doc == null) {
@@ -56,6 +54,21 @@ public class MongoCollectionToMongoCollectionTaskRunner extends TaskRunner {
             }
 
             Article a = Serialization.toJavaObject(doc.toString(), Article.class);
+
+            // XXX  This piece knows too much about the MongoDB collection being used for testing purposes...
+            if (a.file == null) {
+                Object link = doc.get("url");
+                if (link instanceof String) {
+                    a.file = (String)doc.get("url");
+                }
+                else if (link instanceof BasicDBList) {
+                    a.file = (String)((BasicDBList)doc.get("url")).get(0);
+                }
+            }
+            if (a.body == null) {
+                a.body = (String)doc.get("text");
+            }
+
             return new CoreNlpTask(a);
         }
         catch (MongoException e) {

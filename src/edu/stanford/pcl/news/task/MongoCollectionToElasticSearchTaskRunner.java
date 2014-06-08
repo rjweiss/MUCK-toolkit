@@ -30,23 +30,25 @@ public class MongoCollectionToElasticSearchTaskRunner extends TaskRunner {
             e.printStackTrace();
         }
 
-            registerResolver(ElasticsearchTransformAndIndexTask.class, new TaskResolver<ElasticsearchTransformAndIndexTask>() {
+        final DBCollection dbCollection = this.collection;
+        registerResolver(ElasticsearchTransformAndIndexTask.class, new TaskResolver<ElasticsearchTransformAndIndexTask>() {
             @Override
             public void resolve(ElasticsearchTransformAndIndexTask task) {
-//                if (task.isSuccessful()) {
-//                    System.out.println("Inserted.");
-//                }
+                if (task.isSuccessful()) {
+                    BasicDBObject query = new BasicDBObject("_id", task.getArticle()._id);
+                    BasicDBObject update = new BasicDBObject().append("$set", new BasicDBObject("processed", "indexed"));
+                    dbCollection.update(query, update);
+                }
             }
         });
     }
 
     @Override
     public Task next() {
-        BasicDBObject query = new BasicDBObject("processed", "CoreNLP");
-        BasicDBObject sort = new BasicDBObject("$natural", 1);
-        BasicDBObject update = new BasicDBObject().append("$set", new BasicDBObject("processed", "Indexing"));
+        BasicDBObject query = new BasicDBObject("processed", "annotated");
+        BasicDBObject update = new BasicDBObject().append("$set", new BasicDBObject("processed", "indexing"));
 
-        DBObject doc = this.collection.findAndModify(query, sort, update);
+        DBObject doc = this.collection.findAndModify(query, update);
 
         try {
             if (doc == null) {
