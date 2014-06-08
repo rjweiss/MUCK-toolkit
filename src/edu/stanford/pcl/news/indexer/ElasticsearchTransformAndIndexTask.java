@@ -1,5 +1,9 @@
 package edu.stanford.pcl.news.indexer;
 
+
+import java.io.IOException;
+import java.util.*;
+
 import edu.stanford.pcl.news.model.entity.Article;
 import edu.stanford.pcl.news.model.entity.Dependency;
 import edu.stanford.pcl.news.model.entity.Sentence;
@@ -10,13 +14,9 @@ import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 
-import java.io.IOException;
-import java.util.*;
 
 import static org.elasticsearch.client.Requests.createIndexRequest;
 
@@ -24,22 +24,21 @@ public class ElasticsearchTransformAndIndexTask extends Task {
     private static final long serialVersionUID = 4733805814140484587L;
 
     private Article article;
-    private transient Client client;
+    private transient Client client = null;
     private String indexName = "gist";
 
     public ElasticsearchTransformAndIndexTask(Article article) {
         this.article = article;
     }
 
+    public Article getArticle() {
+        return article;
+    }
+
     @Override
-    public void initialize() throws IOException {
-        try {
-            // 9200 is for HTTP
-            // 9300 is for the Java driver
-            this.client = new TransportClient().addTransportAddress(new InetSocketTransportAddress("127.0.0.1", 9300));
-        }
-        catch (ElasticsearchException e) {
-//            e.printStackTrace();
+    public void initialize() throws IOException, ElasticsearchException {
+        if (this.client == null) {
+            this.client = ElasticsearchUtil.getClient();
         }
 
         // XXX  ?
@@ -55,77 +54,133 @@ public class ElasticsearchTransformAndIndexTask extends Task {
 
         // Sentence mapping.
         XContentBuilder sentenceBuilder = XContentFactory.jsonBuilder().
-                startObject().
+            startObject().
                 startObject("sentence").
-                startObject("properties").
-                startObject("persons").
-                field("type", "string").field("store", "yes").field("index", "not_analyzed").
-                endObject().
-                startObject("organizations").
-                field("type", "string").field("store", "yes").field("index", "not_analyzed").
-                endObject().
-                startObject("locations").
-                field("type", "string").field("store", "yes").field("index", "not_analyzed").
-                endObject().
-                startObject("subjects").
-                field("type", "string").field("store", "yes").field("index", "analyzed").
-                endObject().
-                startObject("objects").
-                field("type", "string").field("store", "yes").field("index", "analyzed").
-                endObject().
-                startObject("sentiment").
-                field("type", "string").field("store", "yes").field("index", "not_analyzed").
-                endObject().
-                startObject("indextext").
-                field("type", "string").field("store", "yes").field("index", "analyzed").
-                endObject().
-                startObject("text").
-                field("type", "string").field("store", "yes").field("index", "analyzed").
-                endObject().
-                startObject("date").
-                field("type", "date").field("store", "yes").
-                endObject().
-                startObject("parent_id").
-                field("type", "string").field("store", "yes").
-                startObject("media_id").
-                field("type", "integer").field("store", "yes").
-                endObject().
-                endObject().
-                endObject().
-                endObject();
+                    startObject("properties")
+                        .startObject("persons")
+                            .field("type", "string")
+                            .field("store", "yes")
+                            .field("index", "not_analyzed")
+                            .endObject()
+                        .startObject("organizations").
+                            field("type", "string")
+                            .field("store", "yes")
+                            .field("index", "not_analyzed")
+                            .endObject()
+                        .startObject("locations")
+                            .field("type", "string")
+                            .field("store", "yes")
+                            .field("index", "not_analyzed")
+                            .endObject()
+                        .startObject("subjects")
+                            .field("type", "string")
+                            .field("store", "yes")
+                            .field("index", "analyzed")
+                            .endObject()
+                        .startObject("objects")
+                            .field("type", "string")
+                            .field("store", "yes")
+                            .field("index", "analyzed")
+                            .endObject()
+                        .startObject("sentiment")
+                            .field("type", "string")
+                            .field("store", "yes")
+                            .field("index", "not_analyzed")
+                            .endObject()
+                        .startObject("source_url")
+                            .field("type", "string")
+                            .field("store", "yes")
+                            .field("index", "not_analyzed")
+                            .endObject()
+                        .startObject("url")
+                            .field("type", "string")
+                            .field("store", "yes")
+                            .field("index", "not_analyzed")
+                            .endObject()
+                        .startObject("indextext")
+                            .field("type", "string")
+                            .field("store", "yes")
+                            .field("index", "analyzed")
+                            .endObject()
+                        .startObject("text")
+                            .field("type", "string")
+                            .field("store", "yes")
+                            .field("index", "analyzed")
+                            .endObject()
+                        .startObject("date")
+                            .field("type", "date")
+                            .field("format", "yyyy-MM-dd HH:mm:ss")
+                            .field("store", "yes")
+                            .endObject()
+                        .startObject("parent_id")
+                            .field("type", "string")
+                            .field("store", "yes")
+                            .startObject("media_id")
+                                .field("type", "integer")
+                                .field("store", "yes")
+                                .endObject()
+                            .endObject()
+                        .endObject()
+                    .endObject();
+
         client.admin().indices().preparePutMapping(indexName).setType("sentence").setSource(sentenceBuilder).execute().actionGet();
 
         // Article mapping.
         XContentBuilder articleBuilder = XContentFactory.jsonBuilder().
-                startObject().
-                startObject("article").
-                startObject("properties").
-                startObject("persons").
-                field("type", "string").field("store", "yes").field("index", "not_analyzed").
-                endObject().
-                startObject("organizations").
-                field("type", "string").field("store", "yes").field("index", "not_analyzed").
-                endObject().
-                startObject("locations").
-                field("type", "string").field("store", "yes").field("index", "not_analyzed").
-                endObject().
-                startObject("subjects").
-                field("type", "string").field("store", "yes").field("index", "analyzed").
-                endObject().
-                startObject("objects").
-                field("type", "string").field("store", "yes").field("index", "analyzed").
-                endObject().
-                startObject("indextext").
-                field("type", "string").field("store", "yes").field("index", "analyzed").
-                endObject().
-                startObject("date").
-                field("type", "date").field("store", "yes").
-                startObject("media_id").
-                field("type", "integer").field("store", "yes").
-                endObject().
-                endObject().
-                endObject().
-                endObject();
+            startObject()
+                .startObject("article")
+                    .startObject("properties")
+                        .startObject("persons")
+                            .field("type", "string")
+                            .field("store", "yes")
+                            .field("index", "not_analyzed")
+                            .endObject()
+                        .startObject("organizations")
+                            .field("type", "string")
+                            .field("store", "yes")
+                            .field("index", "not_analyzed")
+                            .endObject()
+                        .startObject("locations")
+                            .field("type", "string")
+                            .field("store", "yes")
+                            .field("index", "not_analyzed")
+                            .endObject()
+                        .startObject("subjects")
+                            .field("type", "string")
+                            .field("store", "yes")
+                            .field("index", "analyzed")
+                            .endObject()
+                        .startObject("objects")
+                            .field("type", "string")
+                            .field("store", "yes")
+                            .field("index", "analyzed")
+                            .endObject()
+                        .startObject("source_url")
+                            .field("type", "string")
+                            .field("store", "yes")
+                            .field("index", "not_analyzed")
+                            .endObject()
+                        .startObject("url")
+                            .field("type", "string")
+                            .field("store", "yes")
+                            .field("index", "not_analyzed")
+                            .endObject()
+                        .startObject("indextext")
+                            .field("type", "string")
+                            .field("store", "yes")
+                            .field("index", "analyzed")
+                            .endObject()
+                        .startObject("date")
+                            .field("type", "date")
+                            .field("format", "yyyy-MM-dd HH:mm:ss")
+                            .field("store", "yes")
+                            .startObject("media_id")
+                                .field("type", "integer")
+                                .field("store", "yes")
+                                .endObject()
+                            .endObject()
+                        .endObject()
+                    .endObject();
         client.admin().indices().preparePutMapping(indexName).setType("article").setSource(articleBuilder).execute().actionGet();
     }
 
@@ -217,25 +272,26 @@ public class ElasticsearchTransformAndIndexTask extends Task {
 
                 List<Dependency> dependencies = sentence.dependencies;
 
-                for (Dependency dependency : dependencies) {
-                    if (dependency.rel.equals("subj")
-                            || dependency.rel.equals("nsubj")
-                            || dependency.rel.equals("nsubjpass")
-                            || dependency.rel.equals("csubj")
-                            || dependency.rel.equals("csubjpass")
-                            ) {
-                        subjects.add(dependency.dep.word);
-                    }
+                if (dependencies != null) {
+                    for (Dependency dependency : dependencies) {
+                        if (dependency.rel.equals("subj")
+                                || dependency.rel.equals("nsubj")
+                                || dependency.rel.equals("nsubjpass")
+                                || dependency.rel.equals("csubj")
+                                || dependency.rel.equals("csubjpass")
+                                ) {
+                            subjects.add(dependency.dep.word);
+                        }
 
-                    if (dependency.rel.equals("obj")
-                            || dependency.rel.equals("dobj")
-                            || dependency.rel.equals("pobj")
-                            || dependency.rel.equals("xobj")
-                            || dependency.rel.equals("iobj")
-                            ) {
-                        objects.add(dependency.dep.word);
+                        if (dependency.rel.equals("obj")
+                                || dependency.rel.equals("dobj")
+                                || dependency.rel.equals("pobj")
+                                || dependency.rel.equals("xobj")
+                                || dependency.rel.equals("iobj")
+                                ) {
+                            objects.add(dependency.dep.word);
+                        }
                     }
-
                 }
 
                 // XXX  Needs to pull by model name.
@@ -346,22 +402,26 @@ public class ElasticsearchTransformAndIndexTask extends Task {
             e.printStackTrace();
         }
 
-        this.client.close();
+        // XXX  Revist client lifecycle.
+//        ElasticsearchUtil.closeClient(client);
+
+
         if (indexResponse != null) {
             this.successful = indexResponse.isCreated();
         }
     }
 
     public IndexResponse indexArticle(Article a) throws IOException {
-
         XContentBuilder sourceBuilder = XContentFactory.jsonBuilder().startObject()
                 .field("persons", a.persons)
                 .field("organizations", a.organizations)
-                .field("date", a.publish_date.toString())
+                .field("date", a.download_date + " 00:00:00")  // XXX  Puke.
                 .field("locations", a.locations)
                 .field("media_id", a.media_id)
                 .field("subjects", a.subjects)
                 .field("objects", a.objects)
+                .field("source_url", a.source_url)
+                .field("url", a.url)
                 .field("indextext", a.indextext);
         IndexRequest request = new IndexRequest(indexName, "article").id(String.valueOf(a._id)).source(sourceBuilder);
 
@@ -372,17 +432,18 @@ public class ElasticsearchTransformAndIndexTask extends Task {
         XContentBuilder sourceBuilder = XContentFactory.jsonBuilder().startObject()
                 .field("persons", s.persons)
                 .field("organizations", s.organizations)
-                .field("date", a.publish_date.toString())
+                .field("date", a.download_date + " 00:00:00")  // XXX  Puke.
                 .field("locations", s.locations)
                 .field("sentiment", s.sentiment)
                 .field("subjects", s.subjects)
                 .field("objects", s.objects)
                 .field("parent_id", a._id)
                 .field("media_id", a.media_id)
+                .field("source_url", a.source_url)
+                .field("url", a.url)
                 .field("text", s.text)
                 .field("indextext", s.indextext);
         IndexRequest request = new IndexRequest(indexName, "sentence").source(sourceBuilder);
-
         return client.index(request).actionGet();
 
     }

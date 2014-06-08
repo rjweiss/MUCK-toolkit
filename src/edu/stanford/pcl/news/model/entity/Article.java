@@ -1,16 +1,24 @@
 package edu.stanford.pcl.news.model.entity;
 
-import edu.stanford.pcl.news.model.Serialization;
-import org.bson.types.ObjectId;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
+
+import edu.stanford.pcl.news.model.Serialization;
+import org.bson.types.ObjectId;
 
 public class Article implements Serializable {
     private static final long serialVersionUID = -8317131662743944911L;
 
     public ObjectId _id;
+
+    // For working with Gistraker
+    public String url;
+    public String download_date;
+    public String published_date;
+    public String title;
+    public String source_url;
+    public String processed;
 
     public String file;
     public String outlet;
